@@ -28,6 +28,7 @@ GLfloat rotLz = 0.0f; // Translate screen by using the glulookAt function (zoom 
 // window title
 #define WINDOW_TITLE_PREFIX "MONIGOTE"
 
+
 // default window's size, but these settings are override later
 int
         CurrentWidth = 800,
