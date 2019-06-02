@@ -66,15 +66,36 @@ void piso();
 void paredes();
 // para SOIL
 GLuint textura[0];
+
 //para LSD
 //audio a reproducir
 #define RUTA_AUDIO "Daft Punk - Around The World.wav"
+// funcion para cargar audio
+void my_audio_callback(void *userdata, Uint8 *stream, int len);
+
+// variables para audio
+static Uint8 *audio_pos; // global pointer to the audio buffer to be played
+static Uint32 audio_len; // remaining length of the sample we have to play
 
 
 //para que se mueva el monigote
 GLint movX;
 GLint movY;
 
+
+void my_audio_callback(void *userdata, Uint8 *stream, int len){
+
+    if (audio_len ==0)
+        return;
+
+    len = ( len > audio_len ? audio_len : len );
+
+    SDL_memcpy (stream, audio_pos, len); // Simplemente copie desde un buffer en el otro
+    //SDL_MixAudio(stream, audio_pos, len, SDL_MIX_MAXVOLUME / 2); // Mezclar de un buffer a otro
+
+    audio_pos += len;
+    audio_len -= len;
+}
 
 // entry point
 int main(int argc, char *argv[]) {
@@ -485,6 +506,8 @@ void drawStickman()
 
 
 
+
+
 // all drawings here
 void display() {
 
@@ -653,64 +676,6 @@ void Initialize(int argc, char *argv[]) {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-void InitWindow(int argc, char *argv[]) {
-    glutInit(&argc, argv);
-
-    // set OpenGL's major and minor versions
-    glutInitContextVersion(1, 0);
-
-    // Only not deprecated methods allowed
-    glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
-    glutInitContextProfile(GLUT_CORE_PROFILE);
-
-    // set behavior on window close by user
-    glutSetOption(
-            GLUT_ACTION_ON_WINDOW_CLOSE,
-            GLUT_ACTION_GLUTMAINLOOP_RETURNS
-    );
-
-    // settings initial values for the window, this override deafult values on top
-    glutInitWindowSize(glutGet(GLUT_SCREEN_WIDTH), glutGet(GLUT_SCREEN_HEIGHT));
-
-    // way to render frames
-    glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
-    //glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);    // Setup display mode to
-    glShadeModel(GL_FLAT); // Set the shading model to GL_FLAT
-    glEnable(GL_LINE_SMOOTH);
-    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST); // Set Line Antialiasing
-
-    glEnable(GL_TEXTURE_2D);
-    glShadeModel(GL_SMOOTH);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
-    glClearDepth(0.5f);
-    glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
-    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-
-    // if windowHandle is greater than 0, then no errors on creating the window
-    WindowHandle = glutCreateWindow(WINDOW_TITLE_PREFIX);
-
-    if (WindowHandle < 1) {
-        fprintf(
-                stderr,
-                "ERROR: Could not create a new rendering window.\n"
-        );
-        exit(EXIT_FAILURE);
-    }
-
-    // reset draws to the new size
-    glutReshapeFunc(ResizeFunction);
-    glutDisplayFunc(RenderFunction);
-
-    // behavior to run at idle
-    glutIdleFunc(IdleFunction);
-    glutTimerFunc(0, TimerFunction, 0);
-
-    // other function calls
-    glutKeyboardFunc(keyboard);
-    glutSpecialFunc(specialKey);
-
-}
 
 void ResizeFunction(int Width, int Height) {
     CurrentWidth = Width;
@@ -811,6 +776,7 @@ void keyboard(unsigned char key, int x, int y) {
             rotLx = 0.0f;
             rotLy = 0.0f;
             rotLz = 0.0f;
+            SDL_PauseAudio(1);
             break;
 
             // W-A-S-D
@@ -848,15 +814,19 @@ void specialKey(int key, int x, int y) {
     switch (key) {
         case GLUT_KEY_LEFT : // Rotate on x axis
             movX = movX + 1;
+            SDL_PauseAudio(0);
             break;
         case GLUT_KEY_RIGHT : // Rotate on x axis (opposite)
             movX = movX - 1;
+            SDL_PauseAudio(0);
             break;
         case GLUT_KEY_UP : // Rotate on y axis
             movY = movY + 1;
+            SDL_PauseAudio(0);
             break;
         case GLUT_KEY_DOWN : // Rotate on y axis (opposite)
             movY = movY - 1;
+            SDL_PauseAudio(0);
             break;
         case GLUT_KEY_PAGE_UP: // Rotate on z axis
             Z -= step;
@@ -877,4 +847,95 @@ void translateRotate() {
     glRotatef(rotY, 0.0, 1.0, 0.0); // Rotate on y
     glRotatef(rotZ, 0.0, 0.0, 1.0); // Rotate on z
     glTranslatef(X, Y, Z);    //
+}
+
+void InitWindow(int argc, char **argv) {
+    glutInit(&argc, argv);
+
+    // set OpenGL's major and minor versions
+    glutInitContextVersion(1, 0);
+
+    // Only not deprecated methods allowed
+    glutInitContextFlags(GLUT_FORWARD_COMPATIBLE);
+    glutInitContextProfile(GLUT_CORE_PROFILE);
+
+    // set behavior on window close by user
+    glutSetOption(
+            GLUT_ACTION_ON_WINDOW_CLOSE,
+            GLUT_ACTION_GLUTMAINLOOP_RETURNS
+    );
+
+    // settings initial values for the window, this override deafult values on top
+    glutInitWindowSize(glutGet(GLUT_SCREEN_WIDTH), glutGet(GLUT_SCREEN_HEIGHT));
+
+    // way to render frames
+    glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
+    //glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);    // Setup display mode to
+    glShadeModel(GL_FLAT); // Set the shading model to GL_FLAT
+    glEnable(GL_LINE_SMOOTH);
+    glHint(GL_LINE_SMOOTH_HINT, GL_NICEST); // Set Line Antialiasing
+
+    glEnable(GL_TEXTURE_2D);
+    glShadeModel(GL_SMOOTH);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
+    glClearDepth(0.5f);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+    glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+    // if windowHandle is greater than 0, then no errors on creating the window
+    WindowHandle = glutCreateWindow(WINDOW_TITLE_PREFIX);
+
+    if (WindowHandle < 1) {
+        fprintf(
+                stderr,
+                "ERROR: Could not create a new rendering window.\n"
+        );
+        exit(EXIT_FAILURE);
+    }
+    // reset draws to the new size
+    glutReshapeFunc(ResizeFunction);
+    glutDisplayFunc(RenderFunction);
+
+    // behavior to run at idle
+    glutIdleFunc(IdleFunction);
+    glutTimerFunc(0, TimerFunction, 0);
+
+    // sonido
+    // Inicializar SDL.
+    if (SDL_Init(SDL_INIT_AUDIO) < 0){
+
+    }
+
+
+    // Variables locales
+    static Uint32 wav_length; // Longitud de nuestra muestra
+    static Uint8 *wav_buffer; // Buffer que contiene nuestro archivo de audio
+    static SDL_AudioSpec wav_spec; // Las especificaciones de nuestra pieza de música
+
+    /* Cargar el WAV */
+    // Las especificaciones, la longitud y el búfer de nuestro wav se llenan
+    if( SDL_LoadWAV(RUTA_AUDIO, &wav_spec, &wav_buffer, &wav_length) == NULL )
+    {
+
+    }
+    // Establecer la función de devolución de llamada
+    wav_spec.callback = my_audio_callback;
+    wav_spec.userdata = NULL;
+
+    // Establecer nuestras variables estáticas globales
+    audio_pos = wav_buffer; // Copia el buffer de sonido
+    audio_len = wav_length; // Copia la longitud del archivo
+
+    /*Abrir el dispositivo de audio */
+    if ( SDL_OpenAudio(&wav_spec, NULL) < 0 )
+    {
+        fprintf(stderr, "No se pudo abrir el audio: %s\n", SDL_GetError());
+        exit(-1);
+    }
+
+    // other function calls
+    glutKeyboardFunc(keyboard);
+    glutSpecialFunc(specialKey);
+
 }
