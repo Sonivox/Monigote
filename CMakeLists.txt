@@ -41,6 +41,6 @@ link_directories(/usr/lib/SOIL)
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
 
-add_executable(monigote main.cpp)
+add_executable(monigote main.cpp animacionR.cpp animacionR.h)
 
 target_link_libraries(monigote ${SDL2_LIBRARIES} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARY} SOIL)
