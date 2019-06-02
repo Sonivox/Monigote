@@ -5,6 +5,7 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h> // freeglut instead of glut because glut is DEPRECATED
 #include <SOIL/SOIL.h>
+#include "GL/glut.h"
 
 #include <SDL2/SDL.h>
 
@@ -27,8 +28,6 @@ GLfloat rotLz = 0.0f; // Translate screen by using the glulookAt function (zoom 
 
 // window title
 #define WINDOW_TITLE_PREFIX "MONIGOTE"
-
-
 
 // default window's size, but these settings are override later
 int
@@ -100,6 +99,392 @@ void luces(void){ //Funcion de la configuracion de la luz
     glLightfv(GL_LIGHT0, GL_POSITION, light_Position );
 }
 
+float tx=0.0f;    //X-axis translation varaible
+float forwardIncrmt = 0.0015f;
+float backwardIncrmt = 0.0013f;        //backward movement speed
+float maxTheta = 35.0f;					//maximum rotation angle
+float movTheta = 0.0f;
+float incTheta = 1.5f;
+bool forwardMov = false;
+int counter;
+
+
+void body()
+{
+    glLineWidth(1.0);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-1.0f,0.8f,-5.0f);
+    glVertex3f(-1.0f, 0.5f,-5.0f);
+    glEnd();
+}
+
+void leftHand()
+{
+    glColor3f(1.1, 1.1, 0.0);
+    glLineWidth(1.0);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-1.0f, 0.8f, -5.0f);
+    glVertex3f(-1.01f, 0.6f, -5.0f);
+    glEnd();
+}
+void rightHand()
+{
+    glColor3f(1.1, 1.1, 0.0);
+    glLineWidth(1.0);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-1.0f, 0.8f, -5.0f);
+    glVertex3f(-0.99f, 0.6f, -5.0f);
+    glEnd();
+}
+void leftArm()
+{
+    glColor3f(1.1, 0.1, 0.0);
+    glLineWidth(1.0);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-1.01f, 0.6f, -5.0f);
+    glVertex3f(-1.02f, 0.5f, -5.0f);
+    glEnd();
+}
+
+void rightArm()
+{
+    glColor3f(1.1, 0.1, 0.0);
+    glLineWidth(1.0);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-0.99f, 0.6f, -5.0f);
+    glVertex3f(-0.98f, 0.5f, -5.0f);
+    glEnd();
+}
+void leftLeg()
+{
+    glColor3f(1.1, 0.1, 0.0);
+    glLineWidth(1.0);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-1.0f, 0.5f, -5.0f);
+    glVertex3f(-1.01f, 0.4f, -5.0f);
+    glEnd();
+}
+void rightLeg()
+{
+    glColor3f(1.1, 0.1, 0.0);
+    glLineWidth(1.0);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-1.0f, 0.5f, -5.0f);
+    glVertex3f(-0.99f, 0.4f, -5.0f);
+    glEnd();
+}
+void leftShin()
+{
+    glColor3f(1.1, 0.1, 0.0);
+    glLineWidth(1.0);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-1.0f, 0.4f, -5.0f);
+    glVertex3f(-1.01f, 0.3f, -5.0f);
+    glEnd();
+}
+void rightShine()
+{
+    glColor3f(1.1, 0.1, 0.0);
+    glLineWidth(1.0);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-1.0f, 0.4f, -5.0f);
+    glVertex3f(-0.99f, 0.3f, -5.0f);
+    glEnd();
+}
+void bodyMovement()
+{
+    if (counter <= 5500)
+    {
+        glTranslatef(tx, 0.0, 0.0);
+        tx = tx + forwardIncrmt;
+        counter++;
+    }
+    else if (counter > 5500 && counter <= 9000)
+    {
+        glTranslatef(tx, 0.0, 0.0);
+        counter++;
+    }
+    else if (counter > 9000 && counter<=15000)
+    {
+        glTranslatef(tx, 0.0, 0.0);
+        tx = tx + forwardIncrmt;
+        counter++;
+    }
+    else if (counter > 15000 && counter <=16500)
+    {
+        glTranslatef(tx, 0.0, 0.0);
+        counter++;
+
+    }
+    else
+    {
+        glTranslatef(tx, 0.0, 0.0);
+        tx = tx - backwardIncrmt;
+    }
+}
+
+void leftHandMovement()
+{
+    if (counter <= 5500)
+    {
+        glTranslatef(-1.0, 0.8, -5.0);
+        glRotatef(movTheta, 0.0, 0.0, 1.0);
+        glTranslatef(1.0, -0.8, 5.0);
+    }
+    else if (counter > 5500 && counter <= 9000)
+    {
+        glTranslatef(-1.0, 0.8, -5.0);
+        glRotatef(-15, 0.0, 0.0, 1.0);
+        glTranslatef(1.0, -0.8, 5.0);
+    }
+    else if (counter > 9000 && counter <= 15000)
+    {
+        glTranslatef(-1.0, 0.8, -5.0);
+        glRotatef(movTheta, 0.0, 0.0, 1.0);
+        glTranslatef(1.0, -0.8, 5.0);
+    }
+    else if (counter > 15000)
+    {
+        glTranslatef(-1.0f, 0.8f, -5.0f);
+        glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
+        glTranslatef(1.0f, -0.8f, 5.0f);
+    }
+}
+void rightHandMovement()
+{
+    if (counter <= 5500)
+    {
+        glTranslatef(-1.0f, 0.8f, -5.0f);
+        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
+        glTranslatef(1.0f, -0.8f, 5.0f);
+    }
+    else if (counter > 5500 && counter <= 9000)
+    {
+        glTranslatef(-1.0, 0.8, -5.0);
+        glRotatef(120, 0.0, 0.0, 1.0);
+        glTranslatef(1.0, -0.8, 5.0);
+    }
+
+    else if (counter > 9000 && counter <=15000)
+    {
+        glTranslatef(-1.0f, 0.8f, -5.0f);
+        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
+        glTranslatef(1.0f, -0.8f, 5.0f);
+    }
+    else if (counter > 15000)
+    {
+        glTranslatef(-1.0f, 0.8f, -5.0f);
+        glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
+        glTranslatef(1.0f, -0.8f, 5.0f);
+    }
+}
+void leftArmMovement()
+{
+    if (counter <= 5500)
+    {
+        glTranslatef(-1.01f, 0.6f, -5.0f);
+        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
+        glTranslatef(1.01f, -0.6f, 5.0f);
+    }
+    else if (counter > 5500 && counter <= 9000)
+    {
+        glTranslatef(-1.01f, 0.6f, -5.0f);
+        glRotatef(15, 0.0f, 0.0f, 1.0f);
+        glTranslatef(1.01f, -0.6f, 5.0f);
+    }
+    else if (counter > 9000 && counter <= 15000)
+    {
+        glTranslatef(-1.01f, 0.6f, -5.0f);
+        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
+        glTranslatef(1.01f, -0.6f, 5.0f);
+    }
+    else if (counter >15000)
+    {
+        glTranslatef(-1.01f, 0.6f, -5.0f);
+        glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
+        glTranslatef(1.01f, -0.6f, 5.0f);
+    }
+
+}
+void rightArmMovement()
+{
+    if (counter <= 5500)
+    {
+        glTranslatef(-0.99f, 0.6f, -5.0f);
+        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
+        glTranslatef(0.99f, -0.6f, 5.0f);
+    }
+    else if (counter > 5500 && counter <=7800)
+    {
+
+        glTranslatef(-0.99f, 0.6f, -5.0f);
+        glRotatef(120, 0.0f, 0.0f, 1.0f);
+        glTranslatef(0.99f, -0.6f, 5.0f);
+
+    }
+    else if (counter > 7800 && counter <= 9000)
+    {
+        glTranslatef(-0.99f, 0.6f, -5.0f);
+        glRotatef(180, 0.0f, 0.0f, 1.0f);
+        glTranslatef(0.99f, -0.6f, 5.0f);
+    }
+
+    else if (counter > 9000 && counter <= 15000)
+    {
+        glTranslatef(-0.99f, 0.6f, -5.0f);
+        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
+        glTranslatef(0.99f, -0.6f, 5.0f);
+    }
+    else if (counter > 15000)
+    {
+        glTranslatef(-0.99f, 0.6f, -5.0f);
+        glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
+        glTranslatef(0.99f, -0.6f, 5.0f);
+
+    }
+}
+void leftLegMovement()
+{
+    if (counter <= 5500)
+    {
+        glTranslatef(-1.0, 0.5, -5.0);
+        glRotatef(-movTheta, 0.0, 0.0, 1.0);
+        glTranslatef(1.0, -0.5, 5.0);
+    }
+    else if (counter > 5500 && counter <=9000)
+    {
+        glTranslatef(-1.0, 0.5, -5.0);
+        glRotatef(15, 0.0, 0.0, 1.0);
+        glTranslatef(1.0, -0.5, 5.0);
+    }
+    else
+    {
+        glTranslatef(-1.0, 0.5, -5.0);
+        glRotatef(-movTheta, 0.0, 0.0, 1.0);
+        glTranslatef(1.0, -0.5, 5.0);
+    }
+}
+
+void rightLegMovement()
+{
+    if (counter <= 5500)
+    {
+        glTranslatef(-1.0f, 0.5f, -5.0f);
+        glRotatef(movTheta, 0.0, 0.0, 1.0);
+        glTranslatef(1.0f, -0.5f, 5.0f);
+    }
+    else if (counter > 5500 && counter <=9000)
+    {
+        glTranslatef(-1.0, 0.5, -5.0);
+        glRotatef(-15, 0.0, 0.0, 1.0);
+        glTranslatef(1.0, -0.5, 5.0);
+    }
+    else
+    {
+        glTranslatef(-1.0f, 0.5f, -5.0f);
+        glRotatef(movTheta, 0.0, 0.0, 1.0);
+        glTranslatef(1.0f, -0.5f, 5.0f);
+    }
+}
+
+void angleTheta()
+{
+    if (forwardMov)
+    {
+        movTheta += incTheta;
+        if (movTheta > maxTheta)
+            forwardMov = false;
+    }
+    else if (!forwardMov)
+    {
+        movTheta -= incTheta;
+        if (movTheta < -maxTheta)
+
+            forwardMov = true;
+
+    }
+}
+void circle(float rad, float xx, float yy) {
+
+    float thetha = 2 * 3.1415 / 20;
+    float x, y;
+    glColor3f(1.1, 1.1, 1.10);
+    glLineWidth(1.0);
+    glBegin(GL_LINE_LOOP);
+    for (int i = 0; i < 20; i++) {
+        x = rad * cos(i*thetha) + xx;
+        y = rad*sin(i*thetha) + yy;
+        float z = -5.0f;
+        glVertex3f(x,y,z);
+    }
+    glEnd();
+}
+void head()
+{
+    circle(0.08, -1.0f, 0.97f);
+
+}
+
+
+void drawStickman()
+{
+    //body
+    glPushMatrix();
+    bodyMovement();
+    body();
+    head();
+    glPopMatrix();
+    //leftHand
+    glPushMatrix();
+    bodyMovement();
+    leftHandMovement();
+    leftHand();
+    glPopMatrix();
+    //leftArm
+    glPushMatrix();
+    bodyMovement();
+    leftHandMovement();
+    leftArmMovement();
+    leftArm();
+    glPopMatrix();
+
+
+    //rightHand
+    glPushMatrix();
+    bodyMovement();
+    rightHandMovement();
+    rightHand();
+    glPopMatrix();
+
+    //rightarm
+    glPushMatrix();
+    bodyMovement();
+    rightHandMovement();
+    rightArmMovement();
+    rightArm();
+    glPopMatrix();
+
+    //leftLeg
+    glPushMatrix();
+    bodyMovement();
+    leftLegMovement();
+    leftLeg();
+    leftShin();
+    glPopMatrix();
+
+    //rightLeg
+    glPushMatrix();
+    bodyMovement();
+    rightLegMovement();
+    rightLeg();
+    rightShine();
+    glPopMatrix();
+    angleTheta();
+
+}
+
+
+
 // all drawings here
 void display() {
 
@@ -109,6 +494,13 @@ void display() {
     translateRotate(); // put this function before each drawing you make.
 
     glColor3f(1,1,1);
+
+    glPushMatrix();
+    //glTranslatef(-6.8f, -1.77f, 0.0f);
+    glScalef(50, 50, 10.0);
+    drawStickman();
+    glPopMatrix();
+
     //piso();
     //paredes();
 
