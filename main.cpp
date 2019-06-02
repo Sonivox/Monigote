@@ -73,6 +73,7 @@ GLuint textura[0];
 // funcion para cargar audio
 void my_audio_callback(void *userdata, Uint8 *stream, int len);
 
+
 // variables para audio
 static Uint8 *audio_pos; // global pointer to the audio buffer to be played
 static Uint32 audio_len; // remaining length of the sample we have to play
