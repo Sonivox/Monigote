@@ -185,7 +185,6 @@ void display() {
         glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
 
         glDisable(GL_LIGHTING);
-        glDisable(GL_TEXTURE_2D);
         //glEnable(GL_DEPTH_TEST);
 
         glClearColor(0.2, 0.2, 0.2, 1.0);
@@ -220,7 +219,11 @@ void display() {
 
         piso();
         paredes();
-        monigote();
+        glColor3f(1, 1, 1);
+
+
+
+
 
         // MONIGOTE en el origen del sistema 3D
         glTranslatef(0, 0, 250);
@@ -234,12 +237,11 @@ void display() {
         glTranslatef(0, 0, 250);
 
         // DIBUJAR MONIGOTE
-        glTranslatef(movX, 0, 0);
-        glTranslatef(0, movY, 0);
-        glTranslatef(0, 0, movZ);
         rotateMonigote();
-        //drawStickman();
+        drawStickman();
+
         glPopMatrix();
+
 
         /*glPushMatrix();
         glTranslatef(0 + movX, 1.3, 0);
@@ -858,7 +860,7 @@ void bodyMovement() {
         tx = tx - backwardIncrmt;
     }*/
 
-    glTranslatef(tx, 0.0, 0.0);
+    glTranslatef(tx, 0, movX);
     //glRotatef(rotate, 1, 1, 1);
 }
 
@@ -1014,9 +1016,9 @@ void circle(float rad, float xx, float yy) {
 
 void head() {
     //circle(0.08, -1.0f, 0.97f);
-    glColor3f(1, 1, 1);
+    glColor3f(0, 0, 1);
     glTranslatef(-mul * 1.0f, mul * 0.97f, -5 * mul);
-    glutWireSphere(0.08 * mul, 10, 5);
+    glutSolidSphere(0.08 * mul, 10, 5);
 
 }
 
