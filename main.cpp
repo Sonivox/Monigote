@@ -335,7 +335,7 @@ void piso() {
     glTranslatef(0,0,-20);
     pisoT[0] = SOIL_load_OGL_texture // cargamos la imagen
             (
-                    "piso.jpeg",
+                    "piso.bmp",
                     SOIL_LOAD_AUTO,
                     SOIL_CREATE_NEW_ID,
                     SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
@@ -352,17 +352,17 @@ void piso() {
 
     glBegin(GL_QUADS);
     glNormal3f( 1.0f, 1.0f,1.0f);
-    glTexCoord2f(10,0); glVertex3f(100.0, -100.0, 0.0);
-    glTexCoord2f(10,10); glVertex3f(-100.0, -100.0,0.0);
-    glTexCoord2f(0,10); glVertex3f(-100.0, 100.0, 0.0);
-    glTexCoord2f(0,0); glVertex3f(100.0, 100.0, 0.0);
+    glTexCoord2f(10,0); glVertex3f(200.0, -200.0, 0.0);
+    glTexCoord2f(10,10); glVertex3f(-200.0, -200.0,0.0);
+    glTexCoord2f(0,10); glVertex3f(-200.0, 200.0, 0.0);
+    glTexCoord2f(0,0); glVertex3f(200.0, 200.0, 0.0);
     glEnd();
 }
 
 void paredes(){
     paredT[0] = SOIL_load_OGL_texture // cargamos la imagen
             (
-                    "ladrillo.jpg",
+                    "pared.bmp",
                     SOIL_LOAD_AUTO,
                     SOIL_CREATE_NEW_ID,
                     SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
@@ -379,25 +379,25 @@ void paredes(){
     glBegin(GL_QUADS);
     glNormal3f( 1.0f, 1.0f,1.0f);
     //pared atras
-    glTexCoord2f(20,0); glVertex3f(200.0, -200.0, 0.0);
-    glTexCoord2f(20,20); glVertex3f(200.0, -200.0, 100.0);
-    glTexCoord2f(0,20); glVertex3f(200.0, 200.0, 100.0);
+    glTexCoord2f(1,0); glVertex3f(200.0, -200.0, 0.0);
+    glTexCoord2f(1,1); glVertex3f(200.0, -200.0, 100.0);
+    glTexCoord2f(0,1); glVertex3f(200.0, 200.0, 100.0);
     glTexCoord2f(0,0); glVertex3f(200.0, 200.0, 00.0);
     //pared adelante
-    glTexCoord2f(20,0); glVertex3f(-200.0, -200.0, 0.0);
-    glTexCoord2f(20,20); glVertex3f(-200.0, -200.0, 100.0);
-    glTexCoord2f(0,20); glVertex3f(-200.0, 200.0, 100.0);
+    glTexCoord2f(1,0); glVertex3f(-200.0, -200.0, 0.0);
+    glTexCoord2f(1,1); glVertex3f(-200.0, -200.0, 100.0);
+    glTexCoord2f(0,1); glVertex3f(-200.0, 200.0, 100.0);
     glTexCoord2f(0,0); glVertex3f(-200.0, 200.0, 00.0);
     //pared izquierda
-    glTexCoord2f(5,5); glVertex3f(200.0, -200.0, 100.0);
-    glTexCoord2f(0,5); glVertex3f(-200.0, -200.0, 100.0);
+    glTexCoord2f(1,1); glVertex3f(200.0, -200.0, 100.0);
+    glTexCoord2f(0,1); glVertex3f(-200.0, -200.0, 100.0);
     glTexCoord2f(0,0); glVertex3f(-200.0, -200.0, 0.0);
-    glTexCoord2f(5,0); glVertex3f(200.0, -200.0, 0.0);
+    glTexCoord2f(1,0); glVertex3f(200.0, -200.0, 0.0);
     //pared derecha
-    glTexCoord2f(5,5); glVertex3f(200.0, 200.0, 100.0);
-    glTexCoord2f(0,5); glVertex3f(-200.0, 200.0, 100.0);
+    glTexCoord2f(1,1); glVertex3f(200.0, 200.0, 100.0);
+    glTexCoord2f(0,1); glVertex3f(-200.0, 200.0, 100.0);
     glTexCoord2f(0,0); glVertex3f(-200.0, 200.0, 0.0);
-    glTexCoord2f(5,0); glVertex3f(200.0, 200.0, 0.0);
+    glTexCoord2f(1,0); glVertex3f(200.0, 200.0, 0.0);
     glEnd();
 }
 
