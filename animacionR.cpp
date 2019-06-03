@@ -4,22 +4,22 @@
 
 #include "animacionR.h"
 
-float tx = 0.0f;    //X-axis translation varaible
-float ty = 0.0f;    //Y-axis translation varaible
-float giftTanslat = 0.0;  //Translation varaible for gift Box
-float giftMov = 0.00575;   //Translation increament value (speed)
-float Maxtx = 6.0f;
-float forwardIncrmt = 0.0015f;
-bool forwardTrans = false;
-float backwardIncrmt = 0.0013f;        //backward movement speed
-float maxTheta = 35.0f;                    //maximum rotation angle
-float movTheta = 0.0f;
-float incTheta = 1.5f;
-bool forwardMov = false;
-int timer = 30;
-int counter;
-float Cx = 0.0f;
-float Cincrmt = 0.03f;
+float tx2 = 0.0f;    //X-axis translation varaible
+float ty2 = 0.0f;    //Y-axis translation varaible
+float giftTanslat2 = 0.0;  //Translation varaible for gift Box
+float giftMov2 = 0.00575;   //Translation increament value (speed)
+float Maxtx2 = 6.0f;
+float forwardIncrmt2 = 0.0015f;
+bool forwardTrans2 = false;
+float backwardIncrmt2 = 0.0013f;        //backward movement speed
+float maxTheta2 = 35.0f;                    //maximum rotation angle
+float movTheta2 = 0.0f;
+float incTheta2 = 1.5f;
+bool forwardMov2 = false;
+int timer2 = 30;
+int counter2;
+float Cx2 = 0.0f;
+float Cincrmt2 = 0.03f;
 
 void animacionPulsarR() {
     glPushMatrix();
@@ -55,9 +55,9 @@ void animacionPulsarR() {
     logo2();
     glPopMatrix();
 
-    //cloud
+    //cloud2
     glPushMatrix();
-    cloudMov2();
+    cloud2Mov2();
     think2();
     glPopMatrix();
 
@@ -72,7 +72,7 @@ void animacionPulsarR() {
     roadMark2();
 }
 
-void circle(float rad, float xx, float yy) {
+void circle2(float rad, float xx, float yy) {
 
     float thetha = 2 * 3.1415 / 20;
     float x, y;
@@ -88,12 +88,12 @@ void circle(float rad, float xx, float yy) {
     glEnd();
 }
 
-void head() {
-    circle(0.08, -1.0f, 0.97f);
+void head2() {
+    circle2(0.08, -1.0f, 0.97f);
 
 }
 
-void print(float x, float y, float z, char *string) {
+void print2(float x, float y, float z, char *string) {
     glRasterPos3f(x, y, z);
     int len = (int) strlen(string);
     for (int i = 0; i < len; i++) {
@@ -102,7 +102,7 @@ void print(float x, float y, float z, char *string) {
     }
 }
 
-void cloud(float rad, float xx, float yy) {
+void cloud2(float rad, float xx, float yy) {
 
     float thetha = 2 * 3.1415 / 20;
     float x, y;
@@ -121,17 +121,17 @@ void cloud(float rad, float xx, float yy) {
 
 void think2() {
     glColor3f(1.1, 1.1, 1.1);
-    cloud(0.4, -0.90f, 0.97f);
-    cloud(0.4, -1.4f, 0.97f);
-    cloud(0.4, -2.0f, 0.97f);
-    cloud(0.4, -1.5f, 0.67f);
-    cloud(0.2, -1.3, 0.1);
-    cloud(0.1, -1.0, -0.1);
-    cloud(0.05, -0.8, -0.3);
+    cloud2(0.4, -0.90f, 0.97f);
+    cloud2(0.4, -1.4f, 0.97f);
+    cloud2(0.4, -2.0f, 0.97f);
+    cloud2(0.4, -1.5f, 0.67f);
+    cloud2(0.2, -1.3, 0.1);
+    cloud2(0.1, -1.0, -0.1);
+    cloud2(0.05, -0.8, -0.3);
     glColor3ub(25, 10, 91);
 
-    const char *message = "¿Ofertas?";
-    print(-2.4, 0.95, -5.0, const_cast<char *>(message));
+    const char *message = "     \xa8Ofertas?";
+    print2(-2.4, 0.95, -5.0, const_cast<char *>(message));
     glRasterPos3f(-3.5, 1.5, -5.0);
 }
 
@@ -296,7 +296,7 @@ void neck() {
     glEnd();
 }
 
-void body() {
+void body2() {
     glColor3f(0.1, 1.1, 0.0);
     glLineWidth(1.0);
     glBegin(GL_LINE_STRIP);
@@ -305,7 +305,7 @@ void body() {
     glEnd();
 }
 
-void leftHand() {
+void leftHand2() {
     glColor3f(1.1, 1.1, 0.0);
     glLineWidth(1.0);
     glBegin(GL_LINE_STRIP);
@@ -314,7 +314,7 @@ void leftHand() {
     glEnd();
 }
 
-void rightHand() {
+void rightHand2() {
     glColor3f(1.1, 1.1, 0.0);
     glLineWidth(1.0);
     glBegin(GL_LINE_STRIP);
@@ -323,7 +323,7 @@ void rightHand() {
     glEnd();
 }
 
-void leftArm() {
+void leftArm2() {
     glColor3f(1.1, 0.1, 0.0);
     glLineWidth(1.0);
     glBegin(GL_LINE_STRIP);
@@ -332,7 +332,7 @@ void leftArm() {
     glEnd();
 }
 
-void rightArm() {
+void rightArm2() {
     glColor3f(1.1, 0.1, 0.0);
     glLineWidth(1.0);
     glBegin(GL_LINE_STRIP);
@@ -341,7 +341,7 @@ void rightArm() {
     glEnd();
 }
 
-void leftLeg() {
+void leftLeg2() {
     glColor3f(1.1, 0.1, 0.0);
     glLineWidth(1.0);
     glBegin(GL_LINE_STRIP);
@@ -350,7 +350,7 @@ void leftLeg() {
     glEnd();
 }
 
-void rightLeg() {
+void rightLeg2() {
     glColor3f(1.1, 0.1, 0.0);
     glLineWidth(1.0);
     glBegin(GL_LINE_STRIP);
@@ -359,7 +359,7 @@ void rightLeg() {
     glEnd();
 }
 
-void leftShin() {
+void leftShin2() {
     glColor3f(1.1, 0.1, 0.0);
     glLineWidth(1.0);
     glBegin(GL_LINE_STRIP);
@@ -368,7 +368,7 @@ void leftShin() {
     glEnd();
 }
 
-void rightShine() {
+void rightShine2() {
     glColor3f(1.1, 0.1, 0.0);
     glLineWidth(1.0);
     glBegin(GL_LINE_STRIP);
@@ -453,102 +453,102 @@ void ads2() {
     glColor3f(1.0, 0.0, 0.0);
 
     const char *message = "50% de descuento en FM";
-    print(-4.50, 0.0, -5.0, const_cast<char *>(message));
+    print2(-4.50, 0.0, -5.0, const_cast<char *>(message));
 
 }
 
 void logo2() {
     glColor3ub(10, 10, 9);
     const char *message = "Tienda FM";
-    print(-0.60, -0.3, -5.0, const_cast<char *>(message));
+    print2(-0.60, -0.3, -5.0, const_cast<char *>(message));
     glRasterPos3f(-0.75, 0.0, -5.0);
 }
 
 void chopperMovement2() {
-    glTranslatef(Cx, 0.0, 0.0);
-    Cx = Cx + Cincrmt;
-    counter++;
-    if (Cx >= 15.5) {
-        Cx = -6;
+    glTranslatef(Cx2, 0.0, 0.0);
+    Cx2 = Cx2 + Cincrmt2;
+    counter2++;
+    if (Cx2 >= 15.5) {
+        Cx2 = -6;
     }
 }
 
-void bodyMovement() {
-    if (counter <= 5500) {
-        glTranslatef(tx, 0.0, 0.0);
-        tx = tx + forwardIncrmt;
-        counter++;
-    } else if (counter > 5500 && counter <= 9000) {
-        glTranslatef(tx, 0.0, 0.0);
-        counter++;
-    } else if (counter > 9000 && counter <= 15000) {
-        glTranslatef(tx, 0.0, 0.0);
-        tx = tx + forwardIncrmt;
-        counter++;
-    } else if (counter > 15000 && counter <= 16500) {
-        glTranslatef(tx, 0.0, 0.0);
-        counter++;
+void bodyMovement2() {
+    if (counter2 <= 5500) {
+        glTranslatef(tx2, 0.0, 0.0);
+        tx2 = tx2 + forwardIncrmt2;
+        counter2++;
+    } else if (counter2 > 5500 && counter2 <= 9000) {
+        glTranslatef(tx2, 0.0, 0.0);
+        counter2++;
+    } else if (counter2 > 9000 && counter2 <= 15000) {
+        glTranslatef(tx2, 0.0, 0.0);
+        tx2 = tx2 + forwardIncrmt2;
+        counter2++;
+    } else if (counter2 > 15000 && counter2 <= 16500) {
+        glTranslatef(tx2, 0.0, 0.0);
+        counter2++;
 
     } else {
-        glTranslatef(tx, 0.0, 0.0);
-        tx = tx - backwardIncrmt;
+        glTranslatef(tx2, 0.0, 0.0);
+        tx2 = tx2 - backwardIncrmt2;
     }
 }
 
-void leftHandMovement() {
-    if (counter <= 5500) {
+void leftHandMovement2() {
+    if (counter2 <= 5500) {
         glTranslatef(-1.0, 0.8, -5.0);
-        glRotatef(movTheta, 0.0, 0.0, 1.0);
+        glRotatef(movTheta2, 0.0, 0.0, 1.0);
         glTranslatef(1.0, -0.8, 5.0);
-    } else if (counter > 5500 && counter <= 9000) {
+    } else if (counter2 > 5500 && counter2 <= 9000) {
         glTranslatef(-1.0, 0.8, -5.0);
         glRotatef(-15, 0.0, 0.0, 1.0);
         glTranslatef(1.0, -0.8, 5.0);
-    } else if (counter > 9000 && counter <= 15000) {
+    } else if (counter2 > 9000 && counter2 <= 15000) {
         glTranslatef(-1.0, 0.8, -5.0);
-        glRotatef(movTheta, 0.0, 0.0, 1.0);
+        glRotatef(movTheta2, 0.0, 0.0, 1.0);
         glTranslatef(1.0, -0.8, 5.0);
-    } else if (counter > 15000) {
+    } else if (counter2 > 15000) {
         glTranslatef(-1.0f, 0.8f, -5.0f);
         glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
         glTranslatef(1.0f, -0.8f, 5.0f);
     }
 }
 
-void rightHandMovement() {
-    if (counter <= 5500) {
+void rightHandMovement2() {
+    if (counter2 <= 5500) {
         glTranslatef(-1.0f, 0.8f, -5.0f);
-        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
+        glRotatef(-movTheta2, 0.0f, 0.0f, 1.0f);
         glTranslatef(1.0f, -0.8f, 5.0f);
-    } else if (counter > 5500 && counter <= 9000) {
+    } else if (counter2 > 5500 && counter2 <= 9000) {
         glTranslatef(-1.0, 0.8, -5.0);
         glRotatef(120, 0.0, 0.0, 1.0);
         glTranslatef(1.0, -0.8, 5.0);
-    } else if (counter > 9000 && counter <= 15000) {
+    } else if (counter2 > 9000 && counter2 <= 15000) {
         glTranslatef(-1.0f, 0.8f, -5.0f);
-        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
+        glRotatef(-movTheta2, 0.0f, 0.0f, 1.0f);
         glTranslatef(1.0f, -0.8f, 5.0f);
-    } else if (counter > 15000) {
+    } else if (counter2 > 15000) {
         glTranslatef(-1.0f, 0.8f, -5.0f);
         glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
         glTranslatef(1.0f, -0.8f, 5.0f);
     }
 }
 
-void leftArmMovement() {
-    if (counter <= 5500) {
+void leftArmMovement2() {
+    if (counter2 <= 5500) {
         glTranslatef(-1.01f, 0.6f, -5.0f);
-        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
+        glRotatef(-movTheta2, 0.0f, 0.0f, 1.0f);
         glTranslatef(1.01f, -0.6f, 5.0f);
-    } else if (counter > 5500 && counter <= 9000) {
+    } else if (counter2 > 5500 && counter2 <= 9000) {
         glTranslatef(-1.01f, 0.6f, -5.0f);
         glRotatef(15, 0.0f, 0.0f, 1.0f);
         glTranslatef(1.01f, -0.6f, 5.0f);
-    } else if (counter > 9000 && counter <= 15000) {
+    } else if (counter2 > 9000 && counter2 <= 15000) {
         glTranslatef(-1.01f, 0.6f, -5.0f);
-        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
+        glRotatef(-movTheta2, 0.0f, 0.0f, 1.0f);
         glTranslatef(1.01f, -0.6f, 5.0f);
-    } else if (counter > 15000) {
+    } else if (counter2 > 15000) {
         glTranslatef(-1.01f, 0.6f, -5.0f);
         glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
         glTranslatef(1.01f, -0.6f, 5.0f);
@@ -556,26 +556,26 @@ void leftArmMovement() {
 
 }
 
-void rightArmMovement() {
-    if (counter <= 5500) {
+void rightArmMovement2() {
+    if (counter2 <= 5500) {
         glTranslatef(-0.99f, 0.6f, -5.0f);
-        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
+        glRotatef(-movTheta2, 0.0f, 0.0f, 1.0f);
         glTranslatef(0.99f, -0.6f, 5.0f);
-    } else if (counter > 5500 && counter <= 7800) {
+    } else if (counter2 > 5500 && counter2 <= 7800) {
 
         glTranslatef(-0.99f, 0.6f, -5.0f);
         glRotatef(120, 0.0f, 0.0f, 1.0f);
         glTranslatef(0.99f, -0.6f, 5.0f);
 
-    } else if (counter > 7800 && counter <= 9000) {
+    } else if (counter2 > 7800 && counter2 <= 9000) {
         glTranslatef(-0.99f, 0.6f, -5.0f);
         glRotatef(180, 0.0f, 0.0f, 1.0f);
         glTranslatef(0.99f, -0.6f, 5.0f);
-    } else if (counter > 9000 && counter <= 15000) {
+    } else if (counter2 > 9000 && counter2 <= 15000) {
         glTranslatef(-0.99f, 0.6f, -5.0f);
-        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
+        glRotatef(-movTheta2, 0.0f, 0.0f, 1.0f);
         glTranslatef(0.99f, -0.6f, 5.0f);
-    } else if (counter > 15000) {
+    } else if (counter2 > 15000) {
         glTranslatef(-0.99f, 0.6f, -5.0f);
         glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
         glTranslatef(0.99f, -0.6f, 5.0f);
@@ -583,53 +583,53 @@ void rightArmMovement() {
     }
 }
 
-void leftLegMovement() {
-    if (counter <= 5500) {
+void leftLegMovement2() {
+    if (counter2 <= 5500) {
         glTranslatef(-1.0, 0.5, -5.0);
-        glRotatef(-movTheta, 0.0, 0.0, 1.0);
+        glRotatef(-movTheta2, 0.0, 0.0, 1.0);
         glTranslatef(1.0, -0.5, 5.0);
-    } else if (counter > 5500 && counter <= 9000) {
+    } else if (counter2 > 5500 && counter2 <= 9000) {
         glTranslatef(-1.0, 0.5, -5.0);
         glRotatef(15, 0.0, 0.0, 1.0);
         glTranslatef(1.0, -0.5, 5.0);
     } else {
         glTranslatef(-1.0, 0.5, -5.0);
-        glRotatef(-movTheta, 0.0, 0.0, 1.0);
+        glRotatef(-movTheta2, 0.0, 0.0, 1.0);
         glTranslatef(1.0, -0.5, 5.0);
     }
 }
 
-void rightLegMovement() {
-    if (counter <= 5500) {
+void rightLegMovement2() {
+    if (counter2 <= 5500) {
         glTranslatef(-1.0f, 0.5f, -5.0f);
-        glRotatef(movTheta, 0.0, 0.0, 1.0);
+        glRotatef(movTheta2, 0.0, 0.0, 1.0);
         glTranslatef(1.0f, -0.5f, 5.0f);
-    } else if (counter > 5500 && counter <= 9000) {
+    } else if (counter2 > 5500 && counter2 <= 9000) {
         glTranslatef(-1.0, 0.5, -5.0);
         glRotatef(-15, 0.0, 0.0, 1.0);
         glTranslatef(1.0, -0.5, 5.0);
     } else {
         glTranslatef(-1.0f, 0.5f, -5.0f);
-        glRotatef(movTheta, 0.0, 0.0, 1.0);
+        glRotatef(movTheta2, 0.0, 0.0, 1.0);
         glTranslatef(1.0f, -0.5f, 5.0f);
     }
 }
 
 void giftBoxMov2() {
-    if (counter < 16400) {
-        glTranslatef(giftTanslat, 0.0, 0.0);
-        counter++;
+    if (counter2 < 16400) {
+        glTranslatef(giftTanslat2, 0.0, 0.0);
+        counter2++;
     } else {
-        glTranslatef(giftTanslat, 0.0, 0.0);
-        giftTanslat = giftTanslat - giftMov;
+        glTranslatef(giftTanslat2, 0.0, 0.0);
+        giftTanslat2 = giftTanslat2 - giftMov2;
     }
 }
 
-void cloudMov2() {
-    if (counter < 5500) {
+void cloud2Mov2() {
+    if (counter2 < 5500) {
         glTranslatef(15, 25, -5.0);
 
-    } else if (counter > 5000 && counter <= 7800) {
+    } else if (counter2 > 5000 && counter2 <= 7800) {
 
 
         glTranslatef(-2.9, -0.80, 0.0);
@@ -638,23 +638,23 @@ void cloudMov2() {
 
     } else {
         glTranslatef(-2.9, -0.80, 0.0);
-        glTranslatef(0.0, ty, 0.0);
+        glTranslatef(0.0, ty2, 0.0);
         glScalef(0.4, 0.4, 1.0);
-        ty = ty + 0.005;
+        ty2 = ty2 + 0.005;
     }
 }
 
 
-void angleTheta() {
-    if (forwardMov) {
-        movTheta += incTheta;
-        if (movTheta > maxTheta)
-            forwardMov = false;
-    } else if (!forwardMov) {
-        movTheta -= incTheta;
-        if (movTheta < -maxTheta)
+void angleTheta2() {
+    if (forwardMov2) {
+        movTheta2 += incTheta2;
+        if (movTheta2 > maxTheta2)
+            forwardMov2 = false;
+    } else if (!forwardMov2) {
+        movTheta2 -= incTheta2;
+        if (movTheta2 < -maxTheta2)
 
-            forwardMov = true;
+            forwardMov2 = true;
 
     }
 }
@@ -663,57 +663,57 @@ void angleTheta() {
 void drawStickman2() {
     //body
     glPushMatrix();
-    bodyMovement();
-    body();
-    head();
+    bodyMovement2();
+    body2();
+    head2();
     neck();
     glPopMatrix();
     //leftHand
     glPushMatrix();
-    bodyMovement();
-    leftHandMovement();
-    leftHand();
+    bodyMovement2();
+    leftHandMovement2();
+    leftHand2();
     glPopMatrix();
     //leftArm
     glPushMatrix();
-    bodyMovement();
-    leftHandMovement();
-    leftArmMovement();
-    leftArm();
+    bodyMovement2();
+    leftHandMovement2();
+    leftArmMovement2();
+    leftArm2();
     glPopMatrix();
 
 
     //rightHand
     glPushMatrix();
-    bodyMovement();
-    rightHandMovement();
-    rightHand();
+    bodyMovement2();
+    rightHandMovement2();
+    rightHand2();
     glPopMatrix();
 
     //rightarm
     glPushMatrix();
-    bodyMovement();
-    rightHandMovement();
-    rightArmMovement();
-    rightArm();
+    bodyMovement2();
+    rightHandMovement2();
+    rightArmMovement2();
+    rightArm2();
     glPopMatrix();
 
-    //leftLeg
+    //leftLeg2()
     glPushMatrix();
-    bodyMovement();
-    leftLegMovement();
-    leftLeg();
-    leftShin();
+    bodyMovement2();
+    leftLegMovement2();
+    leftLeg2();
+    leftShin2();
     glPopMatrix();
 
     //rightLeg
     glPushMatrix();
-    bodyMovement();
-    rightLegMovement();
-    rightLeg();
-    rightShine();
+    bodyMovement2();
+    rightLegMovement2();
+    rightLeg2();
+    rightShine2();
     glPopMatrix();
 
-    angleTheta();
+    angleTheta2();
 
 }

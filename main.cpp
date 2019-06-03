@@ -6,6 +6,7 @@
 #include <GL/freeglut.h> // freeglut instead of glut because glut is DEPRECATED
 #include <SOIL/SOIL.h>
 #include "GL/glut.h"
+#include "animacionR.h"
 
 #include <SDL2/SDL.h>
 
@@ -35,8 +36,12 @@ int
         CurrentHeight = 600,
         WindowHandle = 0;
 
-// frame-counter var
+// frame-counter
+//var
 unsigned FrameCount = 0;
+
+bool animacionTeclaR = false;
+
 
 // function prototypes
 void Initialize(int, char *[]);
@@ -60,6 +65,8 @@ void keyboard(unsigned char, int, int);
 void specialKey(int, int, int);
 
 void translateRotate();
+
+void animacionPulsarR();
 
 //metodos para dibujar
 void piso();
@@ -219,19 +226,16 @@ void bodyMovement()
         glTranslatef(tx, 0.0, 0.0);
         tx = tx + forwardIncrmt;
         counter++;
-    }
-    else if (counter > 5500 && counter <= 9000)
+    } else if (counter > 5500 && counter <= 9000)
     {
         glTranslatef(tx, 0.0, 0.0);
         counter++;
-    }
-    else if (counter > 9000 && counter<=15000)
+    } else if (counter > 9000 && counter <= 15000)
     {
         glTranslatef(tx, 0.0, 0.0);
         tx = tx + forwardIncrmt;
         counter++;
-    }
-    else if (counter > 15000 && counter <=16500)
+    } else if (counter > 15000 && counter <= 16500)
     {
         glTranslatef(tx, 0.0, 0.0);
         counter++;
@@ -278,21 +282,17 @@ void rightHandMovement()
         glTranslatef(-1.0f, 0.8f, -5.0f);
         glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
         glTranslatef(1.0f, -0.8f, 5.0f);
-    }
-    else if (counter > 5500 && counter <= 9000)
+    } else if (counter > 5500 && counter <= 9000)
     {
         glTranslatef(-1.0, 0.8, -5.0);
         glRotatef(120, 0.0, 0.0, 1.0);
         glTranslatef(1.0, -0.8, 5.0);
-    }
-
-    else if (counter > 9000 && counter <=15000)
+    } else if (counter > 9000 && counter <= 15000)
     {
         glTranslatef(-1.0f, 0.8f, -5.0f);
         glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
         glTranslatef(1.0f, -0.8f, 5.0f);
-    }
-    else if (counter > 15000)
+    } else if (counter > 15000)
     {
         glTranslatef(-1.0f, 0.8f, -5.0f);
         glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
@@ -306,20 +306,17 @@ void leftArmMovement()
         glTranslatef(-1.01f, 0.6f, -5.0f);
         glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
         glTranslatef(1.01f, -0.6f, 5.0f);
-    }
-    else if (counter > 5500 && counter <= 9000)
+    } else if (counter > 5500 && counter <= 9000)
     {
         glTranslatef(-1.01f, 0.6f, -5.0f);
         glRotatef(15, 0.0f, 0.0f, 1.0f);
         glTranslatef(1.01f, -0.6f, 5.0f);
-    }
-    else if (counter > 9000 && counter <= 15000)
+    } else if (counter > 9000 && counter <= 15000)
     {
         glTranslatef(-1.01f, 0.6f, -5.0f);
         glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
         glTranslatef(1.01f, -0.6f, 5.0f);
-    }
-    else if (counter >15000)
+    } else if (counter > 15000)
     {
         glTranslatef(-1.01f, 0.6f, -5.0f);
         glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
@@ -334,29 +331,24 @@ void rightArmMovement()
         glTranslatef(-0.99f, 0.6f, -5.0f);
         glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
         glTranslatef(0.99f, -0.6f, 5.0f);
-    }
-    else if (counter > 5500 && counter <=7800)
+    } else if (counter > 5500 && counter <= 7800)
     {
 
         glTranslatef(-0.99f, 0.6f, -5.0f);
         glRotatef(120, 0.0f, 0.0f, 1.0f);
         glTranslatef(0.99f, -0.6f, 5.0f);
 
-    }
-    else if (counter > 7800 && counter <= 9000)
+    } else if (counter > 7800 && counter <= 9000)
     {
         glTranslatef(-0.99f, 0.6f, -5.0f);
         glRotatef(180, 0.0f, 0.0f, 1.0f);
         glTranslatef(0.99f, -0.6f, 5.0f);
-    }
-
-    else if (counter > 9000 && counter <= 15000)
+    } else if (counter > 9000 && counter <= 15000)
     {
         glTranslatef(-0.99f, 0.6f, -5.0f);
         glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
         glTranslatef(0.99f, -0.6f, 5.0f);
-    }
-    else if (counter > 15000)
+    } else if (counter > 15000)
     {
         glTranslatef(-0.99f, 0.6f, -5.0f);
         glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
@@ -371,8 +363,7 @@ void leftLegMovement()
         glTranslatef(-1.0, 0.5, -5.0);
         glRotatef(-movTheta, 0.0, 0.0, 1.0);
         glTranslatef(1.0, -0.5, 5.0);
-    }
-    else if (counter > 5500 && counter <=9000)
+    } else if (counter > 5500 && counter <= 9000)
     {
         glTranslatef(-1.0, 0.5, -5.0);
         glRotatef(15, 0.0, 0.0, 1.0);
@@ -393,8 +384,7 @@ void rightLegMovement()
         glTranslatef(-1.0f, 0.5f, -5.0f);
         glRotatef(movTheta, 0.0, 0.0, 1.0);
         glTranslatef(1.0f, -0.5f, 5.0f);
-    }
-    else if (counter > 5500 && counter <=9000)
+    } else if (counter > 5500 && counter <= 9000)
     {
         glTranslatef(-1.0, 0.5, -5.0);
         glRotatef(-15, 0.0, 0.0, 1.0);
@@ -511,27 +501,63 @@ void drawStickman()
 // all drawings here
 void display() {
 
-    translateRotate(); // put this function before each drawing you make.
-    xyz();
-    luces();
-    translateRotate(); // put this function before each drawing you make.
+    glClearColor(0.0, 0.0, 0.0, 1.0);
 
-    glColor3f(1,1,1);
+    // para animar la escena
+    if (animacionTeclaR) {
+        SDL_PauseAudio(false); // reproducir la canción en la escena
 
-    glPushMatrix();
-    //glTranslatef(-6.8f, -1.77f, 0.0f);
-    glScalef(50, 50, 10.0);
-    drawStickman();
-    glPopMatrix();
+        glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
 
-    //piso();
-    //paredes();
+        glDisable(GL_LIGHTING);
+        //glEnable(GL_DEPTH_TEST);
 
-    glPushMatrix();
-    glTranslatef(0+movX,1.3,0);
-    glTranslatef(0, 20 + movY,0);
-    glutSolidCube(100);
-    glPopMatrix();
+        glClearColor(0.2, 0.2, 0.2, 1.0);
+
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        //glOrtho(0.0, 800, 0.0, 800, -1000.0, 1000.0);
+        //glOrtho(0.0, 800, 0.0, 800, -1000.0, 1000.0);
+        glOrtho(-1.0, 0.7, -1.5, 1.5, -1000, 1000);
+        //glOrtho(-6.0, 6, -6.0, 6, -1000, 1000);
+        gluPerspective(50.0 * zoomFactor2, (float) CurrentWidth / (float) CurrentHeight, zNear2, zFar2);
+        glMatrixMode(GL_MODELVIEW);
+        animacionPulsarR();
+    } else {
+
+        SDL_PauseAudio(true); // pausar la canción en la escena
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(-ortho, ortho, -ortho, ortho, -10 * ortho, 10 * ortho);
+
+
+        //gluPerspective (50.0*zoomFactor2, (float)CurrentWidth/(float)CurrentHeight, zNear2, zFar2);
+        glMatrixMode(GL_MODELVIEW);
+
+
+        translateRotate(); // put this function before each drawing you make.
+        xyz();
+        luces();
+        translateRotate(); // put this function before each drawing you make.
+
+        glColor3f(1, 1, 1);
+
+        glPushMatrix();
+        //glTranslatef(-6.8f, -1.77f, 0.0f);
+        glScalef(50, 50, 10.0);
+        drawStickman();
+        glPopMatrix();
+
+        //piso();
+        //paredes();
+
+        glPushMatrix();
+        glTranslatef(0 + movX, 1.3, 0);
+        glTranslatef(0, 20 + movY, 0);
+        glutSolidCube(100);
+        glPopMatrix();
+    }
+
 
 }
 
@@ -768,6 +794,7 @@ void keyboard(unsigned char key, int x, int y) {
 
         case 'r': // Default, resets the translations vies from starting view
         case 'R':
+            /*
             X = Y = 0.0f;
             Z = 0.0f;
             rotX = defaultRotX;
@@ -775,8 +802,9 @@ void keyboard(unsigned char key, int x, int y) {
             rotZ = defaultRotZ;
             rotLx = 0.0f;
             rotLy = 0.0f;
-            rotLz = 0.0f;
-            SDL_PauseAudio(1);
+            rotLz = 0.0f;*/
+            //SDL_PauseAudio(1);
+            animacionTeclaR = !animacionTeclaR;
             break;
 
             // W-A-S-D

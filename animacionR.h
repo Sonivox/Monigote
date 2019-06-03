@@ -44,7 +44,7 @@ void drawHouse2();
 
 void logo2();
 
-void cloudMov2();
+void cloud2Mov2();
 
 void think2();
 
