@@ -16,6 +16,8 @@ GLfloat ortho = 300;
 GLfloat step = ortho/100;
 GLfloat defaultRotX = -45.0f, defaultRotZ = -135.0f;
 
+bool monigoteCorrer = false;
+
 
 GLfloat X = 0.0f; // Translate screen to x direction (left or right)
 GLfloat Y = 0.0f; // Translate screen to y direction (up or down)
@@ -43,8 +45,10 @@ unsigned FrameCount = 0;
 bool animacionTeclaS = false;
 
 float tx = 0.0f;    //X-axis translation varaible
+float ty = 0.0f;    //Y-axis translation varaible
 float forwardIncrmt = 1.0f;
 float backwardIncrmt = 1.0f;        //backward movement speed
+float asideIncrmt = 1.0f; // left and right
 float maxTheta = 35.0f;                    //maximum rotation angle
 float movTheta = 0.0f;
 float incTheta = 1.5f;
@@ -185,6 +189,7 @@ void display() {
         glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
 
         glDisable(GL_LIGHTING);
+        glDisable(GL_TEXTURE_2D);
         //glEnable(GL_DEPTH_TEST);
 
         glClearColor(0.2, 0.2, 0.2, 1.0);
@@ -238,7 +243,21 @@ void display() {
 
         // DIBUJAR MONIGOTE
         rotateMonigote();
+        glColor4f(1, 1, 1, 1);
         drawStickman();
+        if (monigoteCorrer) {
+            drawStickman();
+            drawStickman();
+            drawStickman();
+            forwardIncrmt = 3;
+            backwardIncrmt = 3;
+            asideIncrmt = 3;
+        } else {
+            forwardIncrmt = 1;
+            backwardIncrmt = 1;
+            asideIncrmt = 1;
+        }
+
 
         glPopMatrix();
 
@@ -340,7 +359,7 @@ void piso() {
                     "piso.bmp",
                     SOIL_LOAD_AUTO,
                     SOIL_CREATE_NEW_ID,
-                    SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
+                    SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_MULTIPLY_ALPHA | SOIL_FLAG_COMPRESS_TO_DXT
             );
 
     glEnable(GL_TEXTURE_2D);
@@ -349,16 +368,22 @@ void piso() {
     //parametros
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
     glBegin(GL_QUADS);
-    glNormal3f( 1.0f, 1.0f,1.0f);
+    //glNormal3f( 1.0f, 1.0f,1.0f);
+    glColor4f(1, 1, 1, 1.0);
     glTexCoord2f(10,0); glVertex3f(200.0, -200.0, 0.0);
     glTexCoord2f(10,10); glVertex3f(-200.0, -200.0,0.0);
     glTexCoord2f(0,10); glVertex3f(-200.0, 200.0, 0.0);
     glTexCoord2f(0,0); glVertex3f(200.0, 200.0, 0.0);
     glEnd();
+
+    glDisable(GL_BLEND);
 }
 
 void paredes(){
@@ -377,9 +402,12 @@ void paredes(){
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     //pared
     glBegin(GL_QUADS);
+    glColor4f(1, 1, 1, 1);
     glNormal3f( 1.0f, 1.0f,1.0f);
     //pared atras
     glTexCoord2f(1,0); glVertex3f(200.0, -200.0, 0.0);
@@ -472,7 +500,7 @@ void Initialize(int argc, char *argv[]) {
     );
 
     // OpenGL clear color
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 void ResizeFunction(int Width, int Height) {
@@ -571,6 +599,7 @@ void keyboard(unsigned char key, int x, int y) {
 
         case 'r':
             // programar la rutina de correr aquí
+            monigoteCorrer = !monigoteCorrer;
             break;
         case 'R':
             // Default, resets the translations vies from starting view
@@ -625,19 +654,20 @@ void specialKey(int key, int x, int y) {
 
     switch (key) {
         case GLUT_KEY_LEFT : // Rotate on x axis
-            movX = movX + 1;
 
+            ty += asideIncrmt;
             break;
         case GLUT_KEY_RIGHT : // Rotate on x axis (opposite)
-            movX = movX - 1;
+
+            ty -= asideIncrmt;
             break;
         case GLUT_KEY_UP : // Rotate on y axis
             movY = movY + 1;
-            tx += forwardIncrmt;
+            tx -= forwardIncrmt;
             break;
         case GLUT_KEY_DOWN : // Rotate on y axis (opposite)
             movY = movY - 1;
-            tx -= backwardIncrmt;
+            tx += backwardIncrmt;
             break;
         case GLUT_KEY_PAGE_UP: // Rotate on z axis
             Z -= step;
@@ -689,17 +719,20 @@ void InitWindow(int argc, char **argv) {
     // way to render frames
     glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
     //glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);    // Setup display mode to
-    glShadeModel(GL_FLAT); // Set the shading model to GL_FLAT
+    //glShadeModel(GL_FLAT); // Set the shading model to GL_FLAT
     glEnable(GL_LINE_SMOOTH);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST); // Set Line Antialiasing
 
     glEnable(GL_TEXTURE_2D);
     glShadeModel(GL_SMOOTH);
-    glClearColor(0.0f, 0.0f, 0.0f, 0.5f);
-    glClearDepth(0.5f);
+
+    glClearDepth(1.0f);
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LEQUAL);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+    glShadeModel(GL_FLAT);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     // if windowHandle is greater than 0, then no errors on creating the window
     WindowHandle = glutCreateWindow(WINDOW_TITLE_PREFIX);
@@ -861,7 +894,7 @@ void bodyMovement() {
         tx = tx - backwardIncrmt;
     }*/
 
-    glTranslatef(tx, 0, movX);
+    glTranslatef(tx, 0, ty);
     //glRotatef(rotate, 1, 1, 1);
 }
 
