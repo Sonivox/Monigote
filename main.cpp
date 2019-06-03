@@ -40,7 +40,32 @@ int
 //var
 unsigned FrameCount = 0;
 
-bool animacionTeclaR = false;
+bool animacionTeclaS = false;
+
+float tx = 0.0f;    //X-axis translation varaible
+float forwardIncrmt = 0.0015f;
+float backwardIncrmt = 0.0013f;        //backward movement speed
+float maxTheta = 35.0f;                    //maximum rotation angle
+float movTheta = 0.0f;
+float incTheta = 1.5f;
+bool forwardMov = false;
+int counter;
+
+// para SOIL
+GLuint textura[0];
+
+//para LSD
+//audio a reproducir
+#define RUTA_AUDIO "Daft Punk - Around The World.wav"
+
+// variables para audio
+static Uint8 *audio_pos; // global pointer to the audio buffer to be played
+static Uint32 audio_len; // remaining length of the sample we have to play
+
+
+//para que se mueva el monigote
+GLint movX;
+GLint movY;
 
 
 // function prototypes
@@ -60,49 +85,67 @@ void display();
 
 void xyz();
 
+void luces();
+
 void keyboard(unsigned char, int, int);
 
 void specialKey(int, int, int);
 
 void translateRotate();
 
-void animacionPulsarR();
+void animacionPulsarS();
 
 //metodos para dibujar
 void piso();
 void paredes();
-// para SOIL
-GLuint textura[0];
 
-//para LSD
-//audio a reproducir
-#define RUTA_AUDIO "Daft Punk - Around The World.wav"
 // funcion para cargar audio
 void my_audio_callback(void *userdata, Uint8 *stream, int len);
 
-// variables para audio
-static Uint8 *audio_pos; // global pointer to the audio buffer to be played
-static Uint32 audio_len; // remaining length of the sample we have to play
+
+// FUNCIONES PARA DIBUJAR MONIGOTE
+void head();
+
+void body();
+
+void leftHand();
+
+void rightHand();
+
+void leftArm();
+
+void rightArm();
+
+void leftLeg();
+
+void rightLeg();
+
+void leftShin();
+
+void rightShine();
+
+void drawStickman();
+
+// Funciones para el movimiento del monigote
+void bodyMovement();
+
+void leftHandMovement();
+
+void rightHandMovement();
+
+void leftArmMovement();
+
+void rightArmMovement();
+
+void leftLegMovement();
+
+void rightLegMovement();
+
+void angleTheta();
+
+void circle(float rad, float xx, float yy);
 
 
-//para que se mueva el monigote
-GLint movX;
-GLint movY;
-
-
-void my_audio_callback(void *userdata, Uint8 *stream, int len){
-
-    if (audio_len ==0)
-        return;
-
-    len = ( len > audio_len ? audio_len : len );
-
-    SDL_memcpy (stream, audio_pos, len); // Simplemente copie desde un buffer en el otro
-    //SDL_MixAudio(stream, audio_pos, len, SDL_MIX_MAXVOLUME / 2); // Mezclar de un buffer a otro
-
-    audio_pos += len;
-    audio_len -= len;
-}
 
 // entry point
 int main(int argc, char *argv[]) {
@@ -115,396 +158,13 @@ int main(int argc, char *argv[]) {
 
 }
 
-void luces(void){ //Funcion de la configuracion de la luz
-    GLfloat light_Ambient [4] = { 2.0, 2.0, 2.0, 2.0};
-    GLfloat light_Diffuse [4] = { 10.0, 1.0, 1.0, 1.0};
-    GLfloat light_Position [4] = {30.0, 10.0, 0.0, 0.0};
-
-    glEnable (GL_LIGHTING);
-    glEnable (GL_LIGHT0);
-    glLightfv(GL_LIGHT0, GL_AMBIENT, light_Ambient );
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_Diffuse );
-    glLightfv(GL_LIGHT0, GL_POSITION, light_Position );
-}
-
-float tx=0.0f;    //X-axis translation varaible
-float forwardIncrmt = 0.0015f;
-float backwardIncrmt = 0.0013f;        //backward movement speed
-float maxTheta = 35.0f;					//maximum rotation angle
-float movTheta = 0.0f;
-float incTheta = 1.5f;
-bool forwardMov = false;
-int counter;
-
-
-void body()
-{
-    glLineWidth(1.0);
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(-1.0f,0.8f,-5.0f);
-    glVertex3f(-1.0f, 0.5f,-5.0f);
-    glEnd();
-}
-
-void leftHand()
-{
-    glColor3f(1.1, 1.1, 0.0);
-    glLineWidth(1.0);
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(-1.0f, 0.8f, -5.0f);
-    glVertex3f(-1.01f, 0.6f, -5.0f);
-    glEnd();
-}
-void rightHand()
-{
-    glColor3f(1.1, 1.1, 0.0);
-    glLineWidth(1.0);
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(-1.0f, 0.8f, -5.0f);
-    glVertex3f(-0.99f, 0.6f, -5.0f);
-    glEnd();
-}
-void leftArm()
-{
-    glColor3f(1.1, 0.1, 0.0);
-    glLineWidth(1.0);
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(-1.01f, 0.6f, -5.0f);
-    glVertex3f(-1.02f, 0.5f, -5.0f);
-    glEnd();
-}
-
-void rightArm()
-{
-    glColor3f(1.1, 0.1, 0.0);
-    glLineWidth(1.0);
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(-0.99f, 0.6f, -5.0f);
-    glVertex3f(-0.98f, 0.5f, -5.0f);
-    glEnd();
-}
-void leftLeg()
-{
-    glColor3f(1.1, 0.1, 0.0);
-    glLineWidth(1.0);
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(-1.0f, 0.5f, -5.0f);
-    glVertex3f(-1.01f, 0.4f, -5.0f);
-    glEnd();
-}
-void rightLeg()
-{
-    glColor3f(1.1, 0.1, 0.0);
-    glLineWidth(1.0);
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(-1.0f, 0.5f, -5.0f);
-    glVertex3f(-0.99f, 0.4f, -5.0f);
-    glEnd();
-}
-void leftShin()
-{
-    glColor3f(1.1, 0.1, 0.0);
-    glLineWidth(1.0);
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(-1.0f, 0.4f, -5.0f);
-    glVertex3f(-1.01f, 0.3f, -5.0f);
-    glEnd();
-}
-void rightShine()
-{
-    glColor3f(1.1, 0.1, 0.0);
-    glLineWidth(1.0);
-    glBegin(GL_LINE_STRIP);
-    glVertex3f(-1.0f, 0.4f, -5.0f);
-    glVertex3f(-0.99f, 0.3f, -5.0f);
-    glEnd();
-}
-void bodyMovement()
-{
-    if (counter <= 5500)
-    {
-        glTranslatef(tx, 0.0, 0.0);
-        tx = tx + forwardIncrmt;
-        counter++;
-    } else if (counter > 5500 && counter <= 9000)
-    {
-        glTranslatef(tx, 0.0, 0.0);
-        counter++;
-    } else if (counter > 9000 && counter <= 15000)
-    {
-        glTranslatef(tx, 0.0, 0.0);
-        tx = tx + forwardIncrmt;
-        counter++;
-    } else if (counter > 15000 && counter <= 16500)
-    {
-        glTranslatef(tx, 0.0, 0.0);
-        counter++;
-
-    }
-    else
-    {
-        glTranslatef(tx, 0.0, 0.0);
-        tx = tx - backwardIncrmt;
-    }
-}
-
-void leftHandMovement()
-{
-    if (counter <= 5500)
-    {
-        glTranslatef(-1.0, 0.8, -5.0);
-        glRotatef(movTheta, 0.0, 0.0, 1.0);
-        glTranslatef(1.0, -0.8, 5.0);
-    }
-    else if (counter > 5500 && counter <= 9000)
-    {
-        glTranslatef(-1.0, 0.8, -5.0);
-        glRotatef(-15, 0.0, 0.0, 1.0);
-        glTranslatef(1.0, -0.8, 5.0);
-    }
-    else if (counter > 9000 && counter <= 15000)
-    {
-        glTranslatef(-1.0, 0.8, -5.0);
-        glRotatef(movTheta, 0.0, 0.0, 1.0);
-        glTranslatef(1.0, -0.8, 5.0);
-    }
-    else if (counter > 15000)
-    {
-        glTranslatef(-1.0f, 0.8f, -5.0f);
-        glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
-        glTranslatef(1.0f, -0.8f, 5.0f);
-    }
-}
-void rightHandMovement()
-{
-    if (counter <= 5500)
-    {
-        glTranslatef(-1.0f, 0.8f, -5.0f);
-        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
-        glTranslatef(1.0f, -0.8f, 5.0f);
-    } else if (counter > 5500 && counter <= 9000)
-    {
-        glTranslatef(-1.0, 0.8, -5.0);
-        glRotatef(120, 0.0, 0.0, 1.0);
-        glTranslatef(1.0, -0.8, 5.0);
-    } else if (counter > 9000 && counter <= 15000)
-    {
-        glTranslatef(-1.0f, 0.8f, -5.0f);
-        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
-        glTranslatef(1.0f, -0.8f, 5.0f);
-    } else if (counter > 15000)
-    {
-        glTranslatef(-1.0f, 0.8f, -5.0f);
-        glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
-        glTranslatef(1.0f, -0.8f, 5.0f);
-    }
-}
-void leftArmMovement()
-{
-    if (counter <= 5500)
-    {
-        glTranslatef(-1.01f, 0.6f, -5.0f);
-        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
-        glTranslatef(1.01f, -0.6f, 5.0f);
-    } else if (counter > 5500 && counter <= 9000)
-    {
-        glTranslatef(-1.01f, 0.6f, -5.0f);
-        glRotatef(15, 0.0f, 0.0f, 1.0f);
-        glTranslatef(1.01f, -0.6f, 5.0f);
-    } else if (counter > 9000 && counter <= 15000)
-    {
-        glTranslatef(-1.01f, 0.6f, -5.0f);
-        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
-        glTranslatef(1.01f, -0.6f, 5.0f);
-    } else if (counter > 15000)
-    {
-        glTranslatef(-1.01f, 0.6f, -5.0f);
-        glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
-        glTranslatef(1.01f, -0.6f, 5.0f);
-    }
-
-}
-void rightArmMovement()
-{
-    if (counter <= 5500)
-    {
-        glTranslatef(-0.99f, 0.6f, -5.0f);
-        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
-        glTranslatef(0.99f, -0.6f, 5.0f);
-    } else if (counter > 5500 && counter <= 7800)
-    {
-
-        glTranslatef(-0.99f, 0.6f, -5.0f);
-        glRotatef(120, 0.0f, 0.0f, 1.0f);
-        glTranslatef(0.99f, -0.6f, 5.0f);
-
-    } else if (counter > 7800 && counter <= 9000)
-    {
-        glTranslatef(-0.99f, 0.6f, -5.0f);
-        glRotatef(180, 0.0f, 0.0f, 1.0f);
-        glTranslatef(0.99f, -0.6f, 5.0f);
-    } else if (counter > 9000 && counter <= 15000)
-    {
-        glTranslatef(-0.99f, 0.6f, -5.0f);
-        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
-        glTranslatef(0.99f, -0.6f, 5.0f);
-    } else if (counter > 15000)
-    {
-        glTranslatef(-0.99f, 0.6f, -5.0f);
-        glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
-        glTranslatef(0.99f, -0.6f, 5.0f);
-
-    }
-}
-void leftLegMovement()
-{
-    if (counter <= 5500)
-    {
-        glTranslatef(-1.0, 0.5, -5.0);
-        glRotatef(-movTheta, 0.0, 0.0, 1.0);
-        glTranslatef(1.0, -0.5, 5.0);
-    } else if (counter > 5500 && counter <= 9000)
-    {
-        glTranslatef(-1.0, 0.5, -5.0);
-        glRotatef(15, 0.0, 0.0, 1.0);
-        glTranslatef(1.0, -0.5, 5.0);
-    }
-    else
-    {
-        glTranslatef(-1.0, 0.5, -5.0);
-        glRotatef(-movTheta, 0.0, 0.0, 1.0);
-        glTranslatef(1.0, -0.5, 5.0);
-    }
-}
-
-void rightLegMovement()
-{
-    if (counter <= 5500)
-    {
-        glTranslatef(-1.0f, 0.5f, -5.0f);
-        glRotatef(movTheta, 0.0, 0.0, 1.0);
-        glTranslatef(1.0f, -0.5f, 5.0f);
-    } else if (counter > 5500 && counter <= 9000)
-    {
-        glTranslatef(-1.0, 0.5, -5.0);
-        glRotatef(-15, 0.0, 0.0, 1.0);
-        glTranslatef(1.0, -0.5, 5.0);
-    }
-    else
-    {
-        glTranslatef(-1.0f, 0.5f, -5.0f);
-        glRotatef(movTheta, 0.0, 0.0, 1.0);
-        glTranslatef(1.0f, -0.5f, 5.0f);
-    }
-}
-
-void angleTheta()
-{
-    if (forwardMov)
-    {
-        movTheta += incTheta;
-        if (movTheta > maxTheta)
-            forwardMov = false;
-    }
-    else if (!forwardMov)
-    {
-        movTheta -= incTheta;
-        if (movTheta < -maxTheta)
-
-            forwardMov = true;
-
-    }
-}
-void circle(float rad, float xx, float yy) {
-
-    float thetha = 2 * 3.1415 / 20;
-    float x, y;
-    glColor3f(1.1, 1.1, 1.10);
-    glLineWidth(1.0);
-    glBegin(GL_LINE_LOOP);
-    for (int i = 0; i < 20; i++) {
-        x = rad * cos(i*thetha) + xx;
-        y = rad*sin(i*thetha) + yy;
-        float z = -5.0f;
-        glVertex3f(x,y,z);
-    }
-    glEnd();
-}
-void head()
-{
-    circle(0.08, -1.0f, 0.97f);
-
-}
-
-
-void drawStickman()
-{
-    //body
-    glPushMatrix();
-    bodyMovement();
-    body();
-    head();
-    glPopMatrix();
-    //leftHand
-    glPushMatrix();
-    bodyMovement();
-    leftHandMovement();
-    leftHand();
-    glPopMatrix();
-    //leftArm
-    glPushMatrix();
-    bodyMovement();
-    leftHandMovement();
-    leftArmMovement();
-    leftArm();
-    glPopMatrix();
-
-
-    //rightHand
-    glPushMatrix();
-    bodyMovement();
-    rightHandMovement();
-    rightHand();
-    glPopMatrix();
-
-    //rightarm
-    glPushMatrix();
-    bodyMovement();
-    rightHandMovement();
-    rightArmMovement();
-    rightArm();
-    glPopMatrix();
-
-    //leftLeg
-    glPushMatrix();
-    bodyMovement();
-    leftLegMovement();
-    leftLeg();
-    leftShin();
-    glPopMatrix();
-
-    //rightLeg
-    glPushMatrix();
-    bodyMovement();
-    rightLegMovement();
-    rightLeg();
-    rightShine();
-    glPopMatrix();
-    angleTheta();
-
-}
-
-
-
-
-
 // all drawings here
 void display() {
 
     glClearColor(0.0, 0.0, 0.0, 1.0);
 
     // para animar la escena
-    if (animacionTeclaR) {
+    if (animacionTeclaS) {
         SDL_PauseAudio(false); // reproducir la canción en la escena
 
         glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
@@ -522,7 +182,7 @@ void display() {
         //glOrtho(-6.0, 6, -6.0, 6, -1000, 1000);
         gluPerspective(50.0 * zoomFactor2, (float) CurrentWidth / (float) CurrentHeight, zNear2, zFar2);
         glMatrixMode(GL_MODELVIEW);
-        animacionPulsarR();
+        animacionPulsarS();
     } else {
 
         SDL_PauseAudio(true); // pausar la canción en la escena
@@ -561,6 +221,31 @@ void display() {
 
 }
 
+void my_audio_callback(void *userdata, Uint8 *stream, int len) {
+
+    if (audio_len == 0)
+        return;
+
+    len = (len > audio_len ? audio_len : len);
+
+    SDL_memcpy(stream, audio_pos, len); // Simplemente copie desde un buffer en el otro
+    //SDL_MixAudio(stream, audio_pos, len, SDL_MIX_MAXVOLUME / 2); // Mezclar de un buffer a otro
+
+    audio_pos += len;
+    audio_len -= len;
+}
+
+void luces(void) { //Funcion de la configuracion de la luz
+    GLfloat light_Ambient[4] = {2.0, 2.0, 2.0, 2.0};
+    GLfloat light_Diffuse[4] = {10.0, 1.0, 1.0, 1.0};
+    GLfloat light_Position[4] = {30.0, 10.0, 0.0, 0.0};
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light_Ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_Diffuse);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_Position);
+}
 
 void piso() {
     textura[0] = SOIL_load_OGL_texture // cargamos la imagen
@@ -629,7 +314,6 @@ void paredes(){
     glTexCoord2f(5,0); glVertex3f(100.0, 100.0, 0.0);
     glEnd();
 }
-
 
 void xyz() {
 
@@ -701,7 +385,6 @@ void Initialize(int argc, char *argv[]) {
     // OpenGL clear color
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 }
-
 
 void ResizeFunction(int Width, int Height) {
     CurrentWidth = Width;
@@ -792,38 +475,46 @@ void keyboard(unsigned char key, int x, int y) {
             rotZ += 90.0f;
             break;
 
-        case 'r': // Default, resets the translations vies from starting view
+
+        case 'r':
+            // programar la rutina de correr aquí
+            break;
         case 'R':
-            /*
-            X = Y = 0.0f;
-            Z = 0.0f;
-            rotX = defaultRotX;
-            rotY = 0.0f;
-            rotZ = defaultRotZ;
-            rotLx = 0.0f;
-            rotLy = 0.0f;
-            rotLz = 0.0f;*/
-            //SDL_PauseAudio(1);
-            animacionTeclaR = !animacionTeclaR;
+            // Default, resets the translations vies from starting view
+            // si está en la escena principal, reiniciar la vista
+            if (!animacionTeclaS) {
+                X = Y = 0.0f;
+                Z = 0.0f;
+                rotX = defaultRotX;
+                rotY = 0.0f;
+                rotZ = defaultRotZ;
+                rotLx = 0.0f;
+                rotLy = 0.0f;
+                rotLz = 0.0f;
+            }
+
+
             break;
 
             // W-A-S-D
 
         case 's': // Rotates screen on x axis
+            animacionTeclaS = !animacionTeclaS;
+            break;
         case 'S':
             rotX -= step;
             break;
-        case 'w': // Opposite way
+
         case 'W':
             rotX += step;
             break;
 
-        case 'd': // Rotates screen on z axis
+            // Rotates screen on z axis
         case 'D':
             rotZ -= step;
             break;
 
-        case 'a': // Opposite way
+            // Opposite way
         case 'A':
             rotZ += step;
             break;
@@ -842,19 +533,15 @@ void specialKey(int key, int x, int y) {
     switch (key) {
         case GLUT_KEY_LEFT : // Rotate on x axis
             movX = movX + 1;
-            SDL_PauseAudio(0);
             break;
         case GLUT_KEY_RIGHT : // Rotate on x axis (opposite)
             movX = movX - 1;
-            SDL_PauseAudio(0);
             break;
         case GLUT_KEY_UP : // Rotate on y axis
             movY = movY + 1;
-            SDL_PauseAudio(0);
             break;
         case GLUT_KEY_DOWN : // Rotate on y axis (opposite)
             movY = movY - 1;
-            SDL_PauseAudio(0);
             break;
         case GLUT_KEY_PAGE_UP: // Rotate on z axis
             Z -= step;
@@ -967,3 +654,321 @@ void InitWindow(int argc, char **argv) {
     glutSpecialFunc(specialKey);
 
 }
+
+
+// ###################################MONIGOTE###########################################################
+void body() {
+    glLineWidth(1.0);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-1.0f, 0.8f, -5.0f);
+    glVertex3f(-1.0f, 0.5f, -5.0f);
+    glEnd();
+}
+
+void leftHand() {
+    glColor3f(1.1, 1.1, 0.0);
+    glLineWidth(1.0);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-1.0f, 0.8f, -5.0f);
+    glVertex3f(-1.01f, 0.6f, -5.0f);
+    glEnd();
+}
+
+void rightHand() {
+    glColor3f(1.1, 1.1, 0.0);
+    glLineWidth(1.0);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-1.0f, 0.8f, -5.0f);
+    glVertex3f(-0.99f, 0.6f, -5.0f);
+    glEnd();
+}
+
+void leftArm() {
+    glColor3f(1.1, 0.1, 0.0);
+    glLineWidth(1.0);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-1.01f, 0.6f, -5.0f);
+    glVertex3f(-1.02f, 0.5f, -5.0f);
+    glEnd();
+}
+
+void rightArm() {
+    glColor3f(1.1, 0.1, 0.0);
+    glLineWidth(1.0);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-0.99f, 0.6f, -5.0f);
+    glVertex3f(-0.98f, 0.5f, -5.0f);
+    glEnd();
+}
+
+void leftLeg() {
+    glColor3f(1.1, 0.1, 0.0);
+    glLineWidth(1.0);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-1.0f, 0.5f, -5.0f);
+    glVertex3f(-1.01f, 0.4f, -5.0f);
+    glEnd();
+}
+
+void rightLeg() {
+    glColor3f(1.1, 0.1, 0.0);
+    glLineWidth(1.0);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-1.0f, 0.5f, -5.0f);
+    glVertex3f(-0.99f, 0.4f, -5.0f);
+    glEnd();
+}
+
+void leftShin() {
+    glColor3f(1.1, 0.1, 0.0);
+    glLineWidth(1.0);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-1.0f, 0.4f, -5.0f);
+    glVertex3f(-1.01f, 0.3f, -5.0f);
+    glEnd();
+}
+
+void rightShine() {
+    glColor3f(1.1, 0.1, 0.0);
+    glLineWidth(1.0);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-1.0f, 0.4f, -5.0f);
+    glVertex3f(-0.99f, 0.3f, -5.0f);
+    glEnd();
+}
+
+void bodyMovement() {
+    if (counter <= 5500) {
+        glTranslatef(tx, 0.0, 0.0);
+        tx = tx + forwardIncrmt;
+        counter++;
+    } else if (counter > 5500 && counter <= 9000) {
+        glTranslatef(tx, 0.0, 0.0);
+        counter++;
+    } else if (counter > 9000 && counter <= 15000) {
+        glTranslatef(tx, 0.0, 0.0);
+        tx = tx + forwardIncrmt;
+        counter++;
+    } else if (counter > 15000 && counter <= 16500) {
+        glTranslatef(tx, 0.0, 0.0);
+        counter++;
+
+    } else {
+        glTranslatef(tx, 0.0, 0.0);
+        tx = tx - backwardIncrmt;
+    }
+}
+
+void leftHandMovement() {
+    if (counter <= 5500) {
+        glTranslatef(-1.0, 0.8, -5.0);
+        glRotatef(movTheta, 0.0, 0.0, 1.0);
+        glTranslatef(1.0, -0.8, 5.0);
+    } else if (counter > 5500 && counter <= 9000) {
+        glTranslatef(-1.0, 0.8, -5.0);
+        glRotatef(-15, 0.0, 0.0, 1.0);
+        glTranslatef(1.0, -0.8, 5.0);
+    } else if (counter > 9000 && counter <= 15000) {
+        glTranslatef(-1.0, 0.8, -5.0);
+        glRotatef(movTheta, 0.0, 0.0, 1.0);
+        glTranslatef(1.0, -0.8, 5.0);
+    } else if (counter > 15000) {
+        glTranslatef(-1.0f, 0.8f, -5.0f);
+        glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
+        glTranslatef(1.0f, -0.8f, 5.0f);
+    }
+}
+
+void rightHandMovement() {
+    if (counter <= 5500) {
+        glTranslatef(-1.0f, 0.8f, -5.0f);
+        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
+        glTranslatef(1.0f, -0.8f, 5.0f);
+    } else if (counter > 5500 && counter <= 9000) {
+        glTranslatef(-1.0, 0.8, -5.0);
+        glRotatef(120, 0.0, 0.0, 1.0);
+        glTranslatef(1.0, -0.8, 5.0);
+    } else if (counter > 9000 && counter <= 15000) {
+        glTranslatef(-1.0f, 0.8f, -5.0f);
+        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
+        glTranslatef(1.0f, -0.8f, 5.0f);
+    } else if (counter > 15000) {
+        glTranslatef(-1.0f, 0.8f, -5.0f);
+        glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
+        glTranslatef(1.0f, -0.8f, 5.0f);
+    }
+}
+
+void leftArmMovement() {
+    if (counter <= 5500) {
+        glTranslatef(-1.01f, 0.6f, -5.0f);
+        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
+        glTranslatef(1.01f, -0.6f, 5.0f);
+    } else if (counter > 5500 && counter <= 9000) {
+        glTranslatef(-1.01f, 0.6f, -5.0f);
+        glRotatef(15, 0.0f, 0.0f, 1.0f);
+        glTranslatef(1.01f, -0.6f, 5.0f);
+    } else if (counter > 9000 && counter <= 15000) {
+        glTranslatef(-1.01f, 0.6f, -5.0f);
+        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
+        glTranslatef(1.01f, -0.6f, 5.0f);
+    } else if (counter > 15000) {
+        glTranslatef(-1.01f, 0.6f, -5.0f);
+        glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
+        glTranslatef(1.01f, -0.6f, 5.0f);
+    }
+
+}
+
+void rightArmMovement() {
+    if (counter <= 5500) {
+        glTranslatef(-0.99f, 0.6f, -5.0f);
+        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
+        glTranslatef(0.99f, -0.6f, 5.0f);
+    } else if (counter > 5500 && counter <= 7800) {
+
+        glTranslatef(-0.99f, 0.6f, -5.0f);
+        glRotatef(120, 0.0f, 0.0f, 1.0f);
+        glTranslatef(0.99f, -0.6f, 5.0f);
+
+    } else if (counter > 7800 && counter <= 9000) {
+        glTranslatef(-0.99f, 0.6f, -5.0f);
+        glRotatef(180, 0.0f, 0.0f, 1.0f);
+        glTranslatef(0.99f, -0.6f, 5.0f);
+    } else if (counter > 9000 && counter <= 15000) {
+        glTranslatef(-0.99f, 0.6f, -5.0f);
+        glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
+        glTranslatef(0.99f, -0.6f, 5.0f);
+    } else if (counter > 15000) {
+        glTranslatef(-0.99f, 0.6f, -5.0f);
+        glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
+        glTranslatef(0.99f, -0.6f, 5.0f);
+
+    }
+}
+
+void leftLegMovement() {
+    if (counter <= 5500) {
+        glTranslatef(-1.0, 0.5, -5.0);
+        glRotatef(-movTheta, 0.0, 0.0, 1.0);
+        glTranslatef(1.0, -0.5, 5.0);
+    } else if (counter > 5500 && counter <= 9000) {
+        glTranslatef(-1.0, 0.5, -5.0);
+        glRotatef(15, 0.0, 0.0, 1.0);
+        glTranslatef(1.0, -0.5, 5.0);
+    } else {
+        glTranslatef(-1.0, 0.5, -5.0);
+        glRotatef(-movTheta, 0.0, 0.0, 1.0);
+        glTranslatef(1.0, -0.5, 5.0);
+    }
+}
+
+void rightLegMovement() {
+    if (counter <= 5500) {
+        glTranslatef(-1.0f, 0.5f, -5.0f);
+        glRotatef(movTheta, 0.0, 0.0, 1.0);
+        glTranslatef(1.0f, -0.5f, 5.0f);
+    } else if (counter > 5500 && counter <= 9000) {
+        glTranslatef(-1.0, 0.5, -5.0);
+        glRotatef(-15, 0.0, 0.0, 1.0);
+        glTranslatef(1.0, -0.5, 5.0);
+    } else {
+        glTranslatef(-1.0f, 0.5f, -5.0f);
+        glRotatef(movTheta, 0.0, 0.0, 1.0);
+        glTranslatef(1.0f, -0.5f, 5.0f);
+    }
+}
+
+void angleTheta() {
+    if (forwardMov) {
+        movTheta += incTheta;
+        if (movTheta > maxTheta)
+            forwardMov = false;
+    } else if (!forwardMov) {
+        movTheta -= incTheta;
+        if (movTheta < -maxTheta)
+
+            forwardMov = true;
+
+    }
+}
+
+void circle(float rad, float xx, float yy) {
+
+    float thetha = 2 * 3.1415 / 20;
+    float x, y;
+    glColor3f(1.1, 1.1, 1.10);
+    glLineWidth(1.0);
+    glBegin(GL_LINE_LOOP);
+    for (int i = 0; i < 20; i++) {
+        x = rad * cos(i * thetha) + xx;
+        y = rad * sin(i * thetha) + yy;
+        float z = -5.0f;
+        glVertex3f(x, y, z);
+    }
+    glEnd();
+}
+
+void head() {
+    circle(0.08, -1.0f, 0.97f);
+
+}
+
+
+void drawStickman() {
+    //body
+    glPushMatrix();
+    bodyMovement();
+    body();
+    head();
+    glPopMatrix();
+    //leftHand
+    glPushMatrix();
+    bodyMovement();
+    leftHandMovement();
+    leftHand();
+    glPopMatrix();
+    //leftArm
+    glPushMatrix();
+    bodyMovement();
+    leftHandMovement();
+    leftArmMovement();
+    leftArm();
+    glPopMatrix();
+
+
+    //rightHand
+    glPushMatrix();
+    bodyMovement();
+    rightHandMovement();
+    rightHand();
+    glPopMatrix();
+
+    //rightarm
+    glPushMatrix();
+    bodyMovement();
+    rightHandMovement();
+    rightArmMovement();
+    rightArm();
+    glPopMatrix();
+
+    //leftLeg
+    glPushMatrix();
+    bodyMovement();
+    leftLegMovement();
+    leftLeg();
+    leftShin();
+    glPopMatrix();
+
+    //rightLeg
+    glPushMatrix();
+    bodyMovement();
+    rightLegMovement();
+    rightLeg();
+    rightShine();
+    glPopMatrix();
+    angleTheta();
+
+}
+
+// ###################################FIN MONIGOTE###########################################################

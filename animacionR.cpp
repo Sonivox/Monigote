@@ -21,7 +21,7 @@ int counter2;
 float Cx2 = 0.0f;
 float Cincrmt2 = 0.03f;
 
-void animacionPulsarR() {
+void animacionPulsarS() {
     glPushMatrix();
     glTranslatef(1.0, 0.25, 0.0);
     glScalef(5.5, 1.0, 1.0);

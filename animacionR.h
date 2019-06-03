@@ -25,7 +25,7 @@ static float zoomFactor2 = 1.0; /* Global, if you want. Modified by user input. 
 static float zNear2 = 1.0, zFar2 = 200.0;
 
 // function to create stickyman scene with R button
-void animacionPulsarR();
+void animacionPulsarS();
 
 // dependencias
 void road2();
