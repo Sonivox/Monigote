@@ -61,7 +61,9 @@ float mRotateY = 0;
 float mRotateZ = 0;
 
 // para SOIL
-GLuint textura[0];
+GLuint pisoT[0];
+GLuint paredT[0];
+GLuint piel[0];
 
 //para LSD
 //audio a reproducir
@@ -75,6 +77,7 @@ static Uint32 audio_len; // remaining length of the sample we have to play
 //para que se mueva el monigote
 GLint movX;
 GLint movY;
+GLint movZ;
 
 
 // function prototypes
@@ -107,6 +110,7 @@ void animacionPulsarS();
 //metodos para dibujar
 void piso();
 void paredes();
+void monigote();
 
 // funcion para cargar audio
 void my_audio_callback(void *userdata, Uint8 *stream, int len);
@@ -196,7 +200,7 @@ void display() {
         animacionPulsarS();
     } else {
 
-        SDL_PauseAudio(true); // pausar la canción en la escena
+        SDL_PauseAudio(0);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         glOrtho(-ortho, ortho, -ortho, ortho, -10 * ortho, 10 * ortho);
@@ -210,13 +214,12 @@ void display() {
         translateRotate(); // put this function before each drawing you make.
         xyz();
         //luces();
-
-
         glColor3f(1, 1, 1);
-
-
         translateRotate();
 
+        piso();
+        paredes();
+        monigote();
 
         // MONIGOTE en el origen del sistema 3D
         glTranslatef(0, 0, 250);
@@ -230,13 +233,12 @@ void display() {
         glTranslatef(0, 0, 250);
 
         // DIBUJAR MONIGOTE
+        glTranslatef(movX, 0, 0);
+        glTranslatef(0, movY, 0);
+        glTranslatef(0, 0, movZ);
         rotateMonigote();
-        drawStickman();
-
+        //drawStickman();
         glPopMatrix();
-
-        //piso();
-        //paredes();
 
         /*glPushMatrix();
         glTranslatef(0 + movX, 1.3, 0);
@@ -274,8 +276,63 @@ void luces(void) { //Funcion de la configuracion de la luz
     glLightfv(GL_LIGHT0, GL_POSITION, light_Position);
 }
 
+void monigote(){
+    piel[0] = SOIL_load_OGL_texture // cargamos la imagen
+            (
+                    "piel.bmp",
+                    SOIL_LOAD_AUTO,
+                    SOIL_CREATE_NEW_ID,
+                    SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
+            );
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, piel[0]);
+
+    glColor3f(1,1,1);
+    //para que se mueva
+    glTranslatef(movX, 0, 0);
+    glTranslatef(0, 0 + movY, 0);
+    glTranslatef(0, 0, movZ + 0);
+
+    //torso
+    GLUquadricObj *quadratic;
+    quadratic = gluNewQuadric();
+    gluQuadricTexture(quadratic, true);
+    GLfloat r = 5;
+    GLfloat h = 20;
+
+    gluCylinder(quadratic, r, r, h, 30, 30);
+
+    //cabeza
+    glTranslatef(0,0,30);
+    glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_DECAL);
+    GLUquadricObj *esfera;
+    esfera =gluNewQuadric();
+    gluQuadricOrientation(esfera,GLU_INSIDE);
+    gluQuadricDrawStyle(esfera, GLU_FILL);
+    gluQuadricNormals(esfera, GLU_SMOOTH);
+    gluQuadricTexture(esfera, GL_TRUE);
+    gluSphere(esfera,8,16,16);
+    gluDeleteQuadric(esfera);
+
+    //brazos
+    glTranslatef(-10,0,-15);
+    glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
+    gluCylinder(quadratic, r/3, r/3, h/3, 30, 30);
+    glTranslatef(0,0,14);
+    gluCylinder(quadratic, r/3, r/3, h/3, 30, 30);
+    //piernas
+    glTranslatef(15,0,-2);
+    glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
+    gluCylinder(quadratic, r/3, r/3, h/2, 30, 30);
+    glTranslatef(5,0,0);
+    gluCylinder(quadratic, r/3, r/3, h/2, 30, 30);
+
+}
+
 void piso() {
-    textura[0] = SOIL_load_OGL_texture // cargamos la imagen
+    glTranslatef(0,0,-20);
+    pisoT[0] = SOIL_load_OGL_texture // cargamos la imagen
             (
                     "piso.jpeg",
                     SOIL_LOAD_AUTO,
@@ -284,7 +341,8 @@ void piso() {
             );
 
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, textura[0]);
+    glBindTexture(GL_TEXTURE_2D, pisoT[0]);
+
     //parametros
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -301,7 +359,7 @@ void piso() {
 }
 
 void paredes(){
-    textura[1] = SOIL_load_OGL_texture // cargamos la imagen
+    paredT[0] = SOIL_load_OGL_texture // cargamos la imagen
             (
                     "ladrillo.jpg",
                     SOIL_LOAD_AUTO,
@@ -309,7 +367,7 @@ void paredes(){
                     SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
             );
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, textura[1]);
+    glBindTexture(GL_TEXTURE_2D, paredT[0]);
     //parametros
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -320,25 +378,25 @@ void paredes(){
     glBegin(GL_QUADS);
     glNormal3f( 1.0f, 1.0f,1.0f);
     //pared atras
-    glTexCoord2f(20,0); glVertex3f(100.0, -100.0, 0.0);
-    glTexCoord2f(20,20); glVertex3f(100.0, -100.0, 100.0);
-    glTexCoord2f(0,20); glVertex3f(100.0, 100.0, 100.0);
-    glTexCoord2f(0,0); glVertex3f(100.0, 100.0, 00.0);
+    glTexCoord2f(20,0); glVertex3f(200.0, -200.0, 0.0);
+    glTexCoord2f(20,20); glVertex3f(200.0, -200.0, 100.0);
+    glTexCoord2f(0,20); glVertex3f(200.0, 200.0, 100.0);
+    glTexCoord2f(0,0); glVertex3f(200.0, 200.0, 00.0);
     //pared adelante
-    glTexCoord2f(20,0); glVertex3f(-100.0, -100.0, 0.0);
-    glTexCoord2f(20,20); glVertex3f(-100.0, -100.0, 100.0);
-    glTexCoord2f(0,20); glVertex3f(-100.0, 100.0, 100.0);
-    glTexCoord2f(0,0); glVertex3f(-100.0, 100.0, 00.0);
+    glTexCoord2f(20,0); glVertex3f(-200.0, -200.0, 0.0);
+    glTexCoord2f(20,20); glVertex3f(-200.0, -200.0, 100.0);
+    glTexCoord2f(0,20); glVertex3f(-200.0, 200.0, 100.0);
+    glTexCoord2f(0,0); glVertex3f(-200.0, 200.0, 00.0);
     //pared izquierda
-    glTexCoord2f(5,5); glVertex3f(100.0, -100.0, 100.0);
-    glTexCoord2f(0,5); glVertex3f(-100.0, -100.0, 100.0);
-    glTexCoord2f(0,0); glVertex3f(-100.0, -100.0, 0.0);
-    glTexCoord2f(5,0); glVertex3f(100.0, -100.0, 0.0);
+    glTexCoord2f(5,5); glVertex3f(200.0, -200.0, 100.0);
+    glTexCoord2f(0,5); glVertex3f(-200.0, -200.0, 100.0);
+    glTexCoord2f(0,0); glVertex3f(-200.0, -200.0, 0.0);
+    glTexCoord2f(5,0); glVertex3f(200.0, -200.0, 0.0);
     //pared derecha
-    glTexCoord2f(5,5); glVertex3f(100.0, 100.0, 100.0);
-    glTexCoord2f(0,5); glVertex3f(-100.0, 100.0, 100.0);
-    glTexCoord2f(0,0); glVertex3f(-100.0, 100.0, 0.0);
-    glTexCoord2f(5,0); glVertex3f(100.0, 100.0, 0.0);
+    glTexCoord2f(5,5); glVertex3f(200.0, 200.0, 100.0);
+    glTexCoord2f(0,5); glVertex3f(-200.0, 200.0, 100.0);
+    glTexCoord2f(0,0); glVertex3f(-200.0, 200.0, 0.0);
+    glTexCoord2f(5,0); glVertex3f(200.0, 200.0, 0.0);
     glEnd();
 }
 
@@ -564,7 +622,7 @@ void specialKey(int key, int x, int y) {
     switch (key) {
         case GLUT_KEY_LEFT : // Rotate on x axis
             movX = movX + 1;
-            rotate += 1;
+
             break;
         case GLUT_KEY_RIGHT : // Rotate on x axis (opposite)
             movX = movX - 1;
@@ -963,6 +1021,8 @@ void head() {
 
 
 void drawStickman() {
+
+    glColor3f(1,1,1);
     //body
     glPushMatrix();
     bodyMovement();
