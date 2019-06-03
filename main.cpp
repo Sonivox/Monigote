@@ -185,6 +185,7 @@ void display() {
         glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
 
         glDisable(GL_LIGHTING);
+        glDisable(GL_TEXTURE_2D);
         //glEnable(GL_DEPTH_TEST);
 
         glClearColor(0.2, 0.2, 0.2, 1.0);
@@ -200,7 +201,7 @@ void display() {
         animacionPulsarS();
     } else {
 
-        SDL_PauseAudio(0);
+        SDL_PauseAudio(true);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         glOrtho(-ortho, ortho, -ortho, ortho, -10 * ortho, 10 * ortho);
