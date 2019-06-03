@@ -43,13 +43,22 @@ unsigned FrameCount = 0;
 bool animacionTeclaS = false;
 
 float tx = 0.0f;    //X-axis translation varaible
-float forwardIncrmt = 0.0015f;
-float backwardIncrmt = 0.0013f;        //backward movement speed
+float forwardIncrmt = 1.0f;
+float backwardIncrmt = 1.0f;        //backward movement speed
 float maxTheta = 35.0f;                    //maximum rotation angle
 float movTheta = 0.0f;
 float incTheta = 1.5f;
 bool forwardMov = false;
 int counter;
+float rotate = 1; // one degree
+
+
+//monigote's multiplier
+float mul = 100;
+// monigote's rotation
+float mRotateX = 0;
+float mRotateY = 0;
+float mRotateZ = 0;
 
 // para SOIL
 GLuint textura[0];
@@ -145,6 +154,8 @@ void angleTheta();
 
 void circle(float rad, float xx, float yy);
 
+void rotateMonigote();
+
 
 
 // entry point
@@ -195,27 +206,43 @@ void display() {
         glMatrixMode(GL_MODELVIEW);
 
 
+
         translateRotate(); // put this function before each drawing you make.
         xyz();
-        luces();
-        translateRotate(); // put this function before each drawing you make.
+        //luces();
+
 
         glColor3f(1, 1, 1);
 
-        glPushMatrix();
-        //glTranslatef(-6.8f, -1.77f, 0.0f);
-        glScalef(50, 50, 10.0);
+
+        translateRotate();
+
+
+        // MONIGOTE en el origen del sistema 3D
+        glTranslatef(0, 0, 250);
+        glTranslatef(0, -15, 0);
+        glTranslatef(50, 0, 0);
+
+        //ROTAR MONIGOTE
+        glRotatef(90, 1, 0, 0);
+        glTranslatef(0, 0, 235);
+        glTranslatef(0, -255, 0);
+        glTranslatef(0, 0, 250);
+
+        // DIBUJAR MONIGOTE
+        rotateMonigote();
         drawStickman();
+
         glPopMatrix();
 
         //piso();
         //paredes();
 
-        glPushMatrix();
+        /*glPushMatrix();
         glTranslatef(0 + movX, 1.3, 0);
         glTranslatef(0, 20 + movY, 0);
         glutSolidCube(100);
-        glPopMatrix();
+        glPopMatrix();*/
     }
 
 
@@ -451,28 +478,32 @@ void keyboard(unsigned char key, int x, int y) {
 
         case 'j': // Rotates on x axis by -90 degree
         case 'J':
-            rotX -= 90.0f;
+            //rotX -= 90.0f;
+            mRotateX -= 1.0;
             break;
         case 'l': // Rotates on x axis by 90 degree
         case 'L':
-            rotX += 90.0f;
+            //rotX += 90.0f;
+            mRotateX += 1.0;
             break;
 
         case 'k': // Rotates on y axis by -90 degree
         case 'K':
-            rotY -= 90.0f;
+            //rotY -= 90.0f;
+            mRotateY -= 1.0;
             break;
         case 'i': // Rotates on y axis by 90 degree
         case 'I':
-            rotY += 90.0f;
+            //rotY += 90.0f;
+            mRotateX += 1.0;
             break;
         case 'u': // Rotates on z axis by -90 degree
         case 'U':
-            rotZ -= 90.0f;
+            //rotZ -= 90.0f;
             break;
         case 'o': // Rotates on z axis by 90 degree
         case 'O':
-            rotZ += 90.0f;
+            //rotZ += 90.0f;
             break;
 
 
@@ -533,15 +564,18 @@ void specialKey(int key, int x, int y) {
     switch (key) {
         case GLUT_KEY_LEFT : // Rotate on x axis
             movX = movX + 1;
+            rotate += 1;
             break;
         case GLUT_KEY_RIGHT : // Rotate on x axis (opposite)
             movX = movX - 1;
             break;
         case GLUT_KEY_UP : // Rotate on y axis
             movY = movY + 1;
+            tx += forwardIncrmt;
             break;
         case GLUT_KEY_DOWN : // Rotate on y axis (opposite)
             movY = movY - 1;
+            tx -= backwardIncrmt;
             break;
         case GLUT_KEY_PAGE_UP: // Rotate on z axis
             Z -= step;
@@ -562,6 +596,13 @@ void translateRotate() {
     glRotatef(rotY, 0.0, 1.0, 0.0); // Rotate on y
     glRotatef(rotZ, 0.0, 0.0, 1.0); // Rotate on z
     glTranslatef(X, Y, Z);    //
+}
+
+void rotateMonigote() {
+    glPushMatrix();    // It is important to push the Matrix before calling
+    glRotatef(mRotateX, 1.0, 0.0, 0.0); // Rotate on x
+    glRotatef(mRotateY, 0.0, 1.0, 0.0); // Rotate on y
+    glRotatef(mRotateZ, 0.0, 0.0, 1.0); // Rotate on z
 }
 
 void InitWindow(int argc, char **argv) {
@@ -660,8 +701,8 @@ void InitWindow(int argc, char **argv) {
 void body() {
     glLineWidth(1.0);
     glBegin(GL_LINE_STRIP);
-    glVertex3f(-1.0f, 0.8f, -5.0f);
-    glVertex3f(-1.0f, 0.5f, -5.0f);
+    glVertex3f(-mul * 1.0f, mul * 0.8f, -mul * 5.0f);
+    glVertex3f(-mul * 1.0f, mul * 0.5f, -mul * 5.0f);
     glEnd();
 }
 
@@ -669,8 +710,8 @@ void leftHand() {
     glColor3f(1.1, 1.1, 0.0);
     glLineWidth(1.0);
     glBegin(GL_LINE_STRIP);
-    glVertex3f(-1.0f, 0.8f, -5.0f);
-    glVertex3f(-1.01f, 0.6f, -5.0f);
+    glVertex3f(-mul * 1.0f, mul * 0.8f, -mul * 5.0f);
+    glVertex3f(-mul * 1.01f, mul * 0.6f, -mul * 5.0f);
     glEnd();
 }
 
@@ -678,8 +719,8 @@ void rightHand() {
     glColor3f(1.1, 1.1, 0.0);
     glLineWidth(1.0);
     glBegin(GL_LINE_STRIP);
-    glVertex3f(-1.0f, 0.8f, -5.0f);
-    glVertex3f(-0.99f, 0.6f, -5.0f);
+    glVertex3f(-mul * 1.0f, mul * 0.8f, -mul * 5.0f);
+    glVertex3f(-mul * 0.99f, mul * 0.6f, -mul * 5.0f);
     glEnd();
 }
 
@@ -687,8 +728,8 @@ void leftArm() {
     glColor3f(1.1, 0.1, 0.0);
     glLineWidth(1.0);
     glBegin(GL_LINE_STRIP);
-    glVertex3f(-1.01f, 0.6f, -5.0f);
-    glVertex3f(-1.02f, 0.5f, -5.0f);
+    glVertex3f(-mul * 1.01f, mul * 0.6f, -mul * 5.0f);
+    glVertex3f(-mul * 1.02f, mul * 0.5f, -mul * 5.0f);
     glEnd();
 }
 
@@ -696,8 +737,8 @@ void rightArm() {
     glColor3f(1.1, 0.1, 0.0);
     glLineWidth(1.0);
     glBegin(GL_LINE_STRIP);
-    glVertex3f(-0.99f, 0.6f, -5.0f);
-    glVertex3f(-0.98f, 0.5f, -5.0f);
+    glVertex3f(-mul * 0.99f, mul * 0.6f, -mul * 5.0f);
+    glVertex3f(-mul * 0.98f, mul * 0.5f, -mul * 5.0f);
     glEnd();
 }
 
@@ -705,8 +746,8 @@ void leftLeg() {
     glColor3f(1.1, 0.1, 0.0);
     glLineWidth(1.0);
     glBegin(GL_LINE_STRIP);
-    glVertex3f(-1.0f, 0.5f, -5.0f);
-    glVertex3f(-1.01f, 0.4f, -5.0f);
+    glVertex3f(-mul * 1.0f, mul * 0.5f, -mul * 5.0f);
+    glVertex3f(-mul * 1.01f, mul * 0.4f, -mul * 5.0f);
     glEnd();
 }
 
@@ -714,8 +755,8 @@ void rightLeg() {
     glColor3f(1.1, 0.1, 0.0);
     glLineWidth(1.0);
     glBegin(GL_LINE_STRIP);
-    glVertex3f(-1.0f, 0.5f, -5.0f);
-    glVertex3f(-0.99f, 0.4f, -5.0f);
+    glVertex3f(-mul * 1.0f, mul * 0.5f, -mul * 5.0f);
+    glVertex3f(-mul * 0.99f, mul * 0.4f, -mul * 5.0f);
     glEnd();
 }
 
@@ -723,8 +764,8 @@ void leftShin() {
     glColor3f(1.1, 0.1, 0.0);
     glLineWidth(1.0);
     glBegin(GL_LINE_STRIP);
-    glVertex3f(-1.0f, 0.4f, -5.0f);
-    glVertex3f(-1.01f, 0.3f, -5.0f);
+    glVertex3f(-mul * 1.0f, mul * 0.4f, -mul * 5.0f);
+    glVertex3f(-mul * 1.01f, mul * 0.3f, -mul * 5.0f);
     glEnd();
 }
 
@@ -732,13 +773,13 @@ void rightShine() {
     glColor3f(1.1, 0.1, 0.0);
     glLineWidth(1.0);
     glBegin(GL_LINE_STRIP);
-    glVertex3f(-1.0f, 0.4f, -5.0f);
-    glVertex3f(-0.99f, 0.3f, -5.0f);
+    glVertex3f(-mul * 1.0f, mul * 0.4f, -mul * 5.0f);
+    glVertex3f(-mul * 0.99f, mul * 0.3f, -mul * 5.0f);
     glEnd();
 }
 
 void bodyMovement() {
-    if (counter <= 5500) {
+    /*if (counter <= 5500) {
         glTranslatef(tx, 0.0, 0.0);
         tx = tx + forwardIncrmt;
         counter++;
@@ -756,126 +797,129 @@ void bodyMovement() {
     } else {
         glTranslatef(tx, 0.0, 0.0);
         tx = tx - backwardIncrmt;
-    }
+    }*/
+
+    glTranslatef(tx, 0.0, 0.0);
+    //glRotatef(rotate, 1, 1, 1);
 }
 
 void leftHandMovement() {
     if (counter <= 5500) {
-        glTranslatef(-1.0, 0.8, -5.0);
+        glTranslatef(-mul * 1.0, mul * 0.8, -mul * 5.0);
         glRotatef(movTheta, 0.0, 0.0, 1.0);
-        glTranslatef(1.0, -0.8, 5.0);
+        glTranslatef(mul * 1.0, -mul * 0.8, mul * 5.0);
     } else if (counter > 5500 && counter <= 9000) {
-        glTranslatef(-1.0, 0.8, -5.0);
+        glTranslatef(-mul * 1.0, mul * 0.8, -mul * 5.0);
         glRotatef(-15, 0.0, 0.0, 1.0);
-        glTranslatef(1.0, -0.8, 5.0);
+        glTranslatef(mul * 1.0, -mul * 0.8, mul * 5.0);
     } else if (counter > 9000 && counter <= 15000) {
-        glTranslatef(-1.0, 0.8, -5.0);
+        glTranslatef(-mul * 1.0, mul * 0.8, -mul * 5.0);
         glRotatef(movTheta, 0.0, 0.0, 1.0);
-        glTranslatef(1.0, -0.8, 5.0);
+        glTranslatef(mul * 1.0, -mul * 0.8, mul * 5.0);
     } else if (counter > 15000) {
-        glTranslatef(-1.0f, 0.8f, -5.0f);
+        glTranslatef(-mul * 1.0f, mul * 0.8f, -mul * 5.0f);
         glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
-        glTranslatef(1.0f, -0.8f, 5.0f);
+        glTranslatef(mul * 1.0f, -mul * 0.8f, mul * 5.0f);
     }
 }
 
 void rightHandMovement() {
     if (counter <= 5500) {
-        glTranslatef(-1.0f, 0.8f, -5.0f);
+        glTranslatef(-mul * 1.0f, mul * 0.8f, -mul * 5.0f);
         glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
-        glTranslatef(1.0f, -0.8f, 5.0f);
+        glTranslatef(mul * 1.0f, -mul * 0.8f, mul * 5.0f);
     } else if (counter > 5500 && counter <= 9000) {
-        glTranslatef(-1.0, 0.8, -5.0);
+        glTranslatef(-mul * 1.0, mul * 0.8, -mul * 5.0);
         glRotatef(120, 0.0, 0.0, 1.0);
-        glTranslatef(1.0, -0.8, 5.0);
+        glTranslatef(mul * 1.0, -mul * 0.8, mul * 5.0);
     } else if (counter > 9000 && counter <= 15000) {
-        glTranslatef(-1.0f, 0.8f, -5.0f);
+        glTranslatef(-mul * 1.0f, mul * 0.8f, -mul * 5.0f);
         glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
-        glTranslatef(1.0f, -0.8f, 5.0f);
+        glTranslatef(mul * 1.0f, -mul * 0.8f, mul * 5.0f);
     } else if (counter > 15000) {
-        glTranslatef(-1.0f, 0.8f, -5.0f);
+        glTranslatef(-mul * 1.0f, mul * 0.8f, -mul * 5.0f);
         glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
-        glTranslatef(1.0f, -0.8f, 5.0f);
+        glTranslatef(mul * 1.0f, -mul * 0.8f, mul * 5.0f);
     }
 }
 
 void leftArmMovement() {
     if (counter <= 5500) {
-        glTranslatef(-1.01f, 0.6f, -5.0f);
+        glTranslatef(-mul * 1.01f, mul * 0.6f, -mul * 5.0f);
         glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
-        glTranslatef(1.01f, -0.6f, 5.0f);
+        glTranslatef(mul * 1.01f, -mul * 0.6f, mul * 5.0f);
     } else if (counter > 5500 && counter <= 9000) {
-        glTranslatef(-1.01f, 0.6f, -5.0f);
+        glTranslatef(-mul * 1.01f, mul * 0.6f, -mul * 5.0f);
         glRotatef(15, 0.0f, 0.0f, 1.0f);
-        glTranslatef(1.01f, -0.6f, 5.0f);
+        glTranslatef(mul * 1.01f, -mul * 0.6f, mul * 5.0f);
     } else if (counter > 9000 && counter <= 15000) {
-        glTranslatef(-1.01f, 0.6f, -5.0f);
+        glTranslatef(-mul * 1.01f, mul * 0.6f, -mul * 5.0f);
         glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
-        glTranslatef(1.01f, -0.6f, 5.0f);
+        glTranslatef(mul * 1.01f, -mul * 0.6f, mul * 5.0f);
     } else if (counter > 15000) {
-        glTranslatef(-1.01f, 0.6f, -5.0f);
+        glTranslatef(-mul * 1.01f, mul * 0.6f, -mul * 5.0f);
         glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
-        glTranslatef(1.01f, -0.6f, 5.0f);
+        glTranslatef(mul * 1.01f, -mul * 0.6f, mul * 5.0f);
     }
 
 }
 
 void rightArmMovement() {
     if (counter <= 5500) {
-        glTranslatef(-0.99f, 0.6f, -5.0f);
+        glTranslatef(-mul * 0.99f, mul * 0.6f, -mul * 5.0f);
         glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
-        glTranslatef(0.99f, -0.6f, 5.0f);
+        glTranslatef(mul * 0.99f, -mul * 0.6f, mul * 5.0f);
     } else if (counter > 5500 && counter <= 7800) {
 
-        glTranslatef(-0.99f, 0.6f, -5.0f);
+        glTranslatef(-mul * 0.99f, mul * 0.6f, -mul * 5.0f);
         glRotatef(120, 0.0f, 0.0f, 1.0f);
-        glTranslatef(0.99f, -0.6f, 5.0f);
+        glTranslatef(mul * 0.99f, -mul * 0.6f, mul * 5.0f);
 
     } else if (counter > 7800 && counter <= 9000) {
-        glTranslatef(-0.99f, 0.6f, -5.0f);
+        glTranslatef(-mul * 0.99f, mul * 0.6f, -mul * 5.0f);
         glRotatef(180, 0.0f, 0.0f, 1.0f);
-        glTranslatef(0.99f, -0.6f, 5.0f);
+        glTranslatef(mul * 0.99f, -mul * 0.6f, mul * 5.0f);
     } else if (counter > 9000 && counter <= 15000) {
-        glTranslatef(-0.99f, 0.6f, -5.0f);
+        glTranslatef(-mul * 0.99f, mul * 0.6f, -mul * 5.0f);
         glRotatef(-movTheta, 0.0f, 0.0f, 1.0f);
-        glTranslatef(0.99f, -0.6f, 5.0f);
+        glTranslatef(mul * 0.99f, -mul * 0.6f, mul * 5.0f);
     } else if (counter > 15000) {
-        glTranslatef(-0.99f, 0.6f, -5.0f);
+        glTranslatef(-mul * 0.99f, mul * 0.6f, -mul * 5.0f);
         glRotatef(-45.0f, 0.0f, 0.0f, 1.0f);
-        glTranslatef(0.99f, -0.6f, 5.0f);
+        glTranslatef(mul * 0.99f, -mul * 0.6f, mul * 5.0f);
 
     }
 }
 
 void leftLegMovement() {
     if (counter <= 5500) {
-        glTranslatef(-1.0, 0.5, -5.0);
+        glTranslatef(-mul * 1.0, mul * 0.5, -mul * 5.0);
         glRotatef(-movTheta, 0.0, 0.0, 1.0);
-        glTranslatef(1.0, -0.5, 5.0);
+        glTranslatef(mul * 1.0, -mul * 0.5, mul * 5.0);
     } else if (counter > 5500 && counter <= 9000) {
-        glTranslatef(-1.0, 0.5, -5.0);
+        glTranslatef(-mul * 1.0, mul * 0.5, -mul * 5.0);
         glRotatef(15, 0.0, 0.0, 1.0);
         glTranslatef(1.0, -0.5, 5.0);
     } else {
-        glTranslatef(-1.0, 0.5, -5.0);
+        glTranslatef(mul * 1.0, mul * 0.5, -mul * 5.0);
         glRotatef(-movTheta, 0.0, 0.0, 1.0);
-        glTranslatef(1.0, -0.5, 5.0);
+        glTranslatef(mul * 1.0, -mul * 0.5, mul * 5.0);
     }
 }
 
 void rightLegMovement() {
     if (counter <= 5500) {
-        glTranslatef(-1.0f, 0.5f, -5.0f);
+        glTranslatef(-mul * 1.0f, mul * 0.5f, -mul * 5.0f);
         glRotatef(movTheta, 0.0, 0.0, 1.0);
-        glTranslatef(1.0f, -0.5f, 5.0f);
+        glTranslatef(mul * 1.0f, -mul * 0.5f, mul * 5.0f);
     } else if (counter > 5500 && counter <= 9000) {
-        glTranslatef(-1.0, 0.5, -5.0);
+        glTranslatef(-mul * 1.0, mul * 0.5, -mul * 5.0);
         glRotatef(-15, 0.0, 0.0, 1.0);
-        glTranslatef(1.0, -0.5, 5.0);
+        glTranslatef(mul * 1.0, -mul * 0.5, mul * 5.0);
     } else {
-        glTranslatef(-1.0f, 0.5f, -5.0f);
+        glTranslatef(-mul * 1.0f, mul * 0.5f, -mul * 5.0f);
         glRotatef(movTheta, 0.0, 0.0, 1.0);
-        glTranslatef(1.0f, -0.5f, 5.0f);
+        glTranslatef(mul * 1.0f, -mul * 0.5f, mul * 5.0f);
     }
 }
 
@@ -904,13 +948,16 @@ void circle(float rad, float xx, float yy) {
         x = rad * cos(i * thetha) + xx;
         y = rad * sin(i * thetha) + yy;
         float z = -5.0f;
-        glVertex3f(x, y, z);
+        glVertex3f(mul * x, mul * y, mul * z);
     }
     glEnd();
 }
 
 void head() {
-    circle(0.08, -1.0f, 0.97f);
+    //circle(0.08, -1.0f, 0.97f);
+    glColor3f(1, 1, 1);
+    glTranslatef(-mul * 1.0f, mul * 0.97f, -5 * mul);
+    glutWireSphere(0.08 * mul, 10, 5);
 
 }
 
