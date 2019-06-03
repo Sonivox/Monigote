@@ -7,8 +7,15 @@
 #include <SOIL/SOIL.h>
 #include "GL/glut.h"
 #include "animacionR.h"
-
 #include <SDL2/SDL.h>
+
+/*          UNIVERSIDAD DE EL SALVADOR
+ *          ALGORITMOS GRAFICOS - 2019
+ *             ACTIVIDAD ANIMACION.
+ *
+ *    ROBERTO HERBERTH MALTEZ GUARDADO - MG16071
+ *    FERNANDO ROMAN VENTURA ALVARADO  - VA16001
+ * */
 
 using namespace std;
 
@@ -17,6 +24,8 @@ GLfloat step = ortho/100;
 GLfloat defaultRotX = -45.0f, defaultRotZ = -135.0f;
 
 bool monigoteCorrer = false;
+
+bool agachado = false;
 
 
 GLfloat X = 0.0f; // Translate screen to x direction (left or right)
@@ -78,11 +87,6 @@ static Uint8 *audio_pos; // global pointer to the audio buffer to be played
 static Uint32 audio_len; // remaining length of the sample we have to play
 
 
-//para que se mueva el monigote
-GLint movX;
-GLint movY;
-GLint movZ;
-
 
 // function prototypes
 void Initialize(int, char *[]);
@@ -114,7 +118,7 @@ void animacionPulsarS();
 //metodos para dibujar
 void piso();
 void paredes();
-void monigote();
+GLint salto = 0;
 
 // funcion para cargar audio
 void my_audio_callback(void *userdata, Uint8 *stream, int len);
@@ -244,7 +248,10 @@ void display() {
         // DIBUJAR MONIGOTE
         rotateMonigote();
         glColor4f(1, 1, 1, 1);
+
+        glTranslatef(0, salto +0, 0);
         drawStickman();
+
         if (monigoteCorrer) {
             drawStickman();
             drawStickman();
@@ -256,6 +263,13 @@ void display() {
             forwardIncrmt = 1;
             backwardIncrmt = 1;
             asideIncrmt = 1;
+        }
+
+        if(agachado){
+            glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
+            drawStickman();
+        } else{
+            drawStickman();
         }
 
 
@@ -296,60 +310,6 @@ void luces(void) { //Funcion de la configuracion de la luz
     glLightfv(GL_LIGHT0, GL_AMBIENT, light_Ambient);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, light_Diffuse);
     glLightfv(GL_LIGHT0, GL_POSITION, light_Position);
-}
-
-void monigote(){
-    piel[0] = SOIL_load_OGL_texture // cargamos la imagen
-            (
-                    "piel.bmp",
-                    SOIL_LOAD_AUTO,
-                    SOIL_CREATE_NEW_ID,
-                    SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
-            );
-
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, piel[0]);
-
-    glColor3f(1,1,1);
-    //para que se mueva
-    glTranslatef(movX, 0, 0);
-    glTranslatef(0, 0 + movY, 0);
-    glTranslatef(0, 0, movZ + 0);
-
-    //torso
-    GLUquadricObj *quadratic;
-    quadratic = gluNewQuadric();
-    gluQuadricTexture(quadratic, true);
-    GLfloat r = 5;
-    GLfloat h = 20;
-
-    gluCylinder(quadratic, r, r, h, 30, 30);
-
-    //cabeza
-    glTranslatef(0,0,30);
-    glTexEnvi(GL_TEXTURE_ENV,GL_TEXTURE_ENV_MODE,GL_DECAL);
-    GLUquadricObj *esfera;
-    esfera =gluNewQuadric();
-    gluQuadricOrientation(esfera,GLU_INSIDE);
-    gluQuadricDrawStyle(esfera, GLU_FILL);
-    gluQuadricNormals(esfera, GLU_SMOOTH);
-    gluQuadricTexture(esfera, GL_TRUE);
-    gluSphere(esfera,8,16,16);
-    gluDeleteQuadric(esfera);
-
-    //brazos
-    glTranslatef(-10,0,-15);
-    glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
-    gluCylinder(quadratic, r/3, r/3, h/3, 30, 30);
-    glTranslatef(0,0,14);
-    gluCylinder(quadratic, r/3, r/3, h/3, 30, 30);
-    //piernas
-    glTranslatef(15,0,-2);
-    glRotatef(90.0f, 0.0f, 1.0f, 0.0f);
-    gluCylinder(quadratic, r/3, r/3, h/2, 30, 30);
-    glTranslatef(5,0,0);
-    gluCylinder(quadratic, r/3, r/3, h/2, 30, 30);
-
 }
 
 void piso() {
@@ -590,12 +550,17 @@ void keyboard(unsigned char key, int x, int y) {
         case 'u': // Rotates on z axis by -90 degree
         case 'U':
             //rotZ -= 90.0f;
+            salto = salto + 20;
             break;
         case 'o': // Rotates on z axis by 90 degree
         case 'O':
             //rotZ += 90.0f;
+            salto = salto - 20;
             break;
 
+        case 'p':
+            agachado = !agachado;
+            break;
 
         case 'r':
             // programar la rutina de correr aquí
@@ -654,19 +619,15 @@ void specialKey(int key, int x, int y) {
 
     switch (key) {
         case GLUT_KEY_LEFT : // Rotate on x axis
-
             ty += asideIncrmt;
             break;
         case GLUT_KEY_RIGHT : // Rotate on x axis (opposite)
-
             ty -= asideIncrmt;
             break;
-        case GLUT_KEY_UP : // Rotate on y axis
-            movY = movY + 1;
+        case GLUT_KEY_UP : // Rotate on y axi
             tx -= forwardIncrmt;
             break;
         case GLUT_KEY_DOWN : // Rotate on y axis (opposite)
-            movY = movY - 1;
             tx += backwardIncrmt;
             break;
         case GLUT_KEY_PAGE_UP: // Rotate on z axis
@@ -1058,7 +1019,6 @@ void head() {
 
 
 void drawStickman() {
-
     glColor3f(1,1,1);
     //body
     glPushMatrix();
